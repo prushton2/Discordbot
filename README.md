@@ -4,7 +4,7 @@
 
 Create these files before running
 
-Config.json : 
+Config.json: 
 ```javascript
 {
   "prefix":"<Desired prefix goes here>",

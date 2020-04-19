@@ -22,6 +22,7 @@ currency = json.JsonManager(os.path.join(os.getcwd(), extraPath+"Currency.json")
 
 @bot.event
 async def on_ready():
+    await bot.change_presence(activity=discord.Game(name=config.load()["prefix"]+"help"))
     print("Bot is ready")
 
 @bot.event
@@ -31,7 +32,6 @@ async def on_message(message):
     if(message.author.id == bot.user.id):
         return
 
-    # if(message.content.startswith(config.load()["prefix"])):
     command = cmds.checkAllCommands(message, config.load()["prefix"])
 
     if(command == None):
@@ -60,7 +60,7 @@ async def on_message(message):
     
     elif(command == "help"):
         for i in cmds.commands:
-            string = i.commands[0]+" ("
+            string = config.load()["prefix"]+i.commands[0]+" ("
             for j in range(len(i.commands)-1):
                 string += i.commands[j+1]+", "
             string += ")"
