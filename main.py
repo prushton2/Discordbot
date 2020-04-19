@@ -37,6 +37,13 @@ async def on_message(message):
             bal["bal"][str(message.author.id)] = 1
         currency.save(bal)
 
+
+        if( "mr peter" in message.content.lower() or
+            "mr. peter" in message.content.lower() or
+            "mrpeter" in message.content.lower()):
+            string = "Baby "+message.author.name
+            await message.channel.send(string)
+
     
     if(command == "ping"):
         await message.channel.send("Pong")

@@ -13,11 +13,3 @@ class Commands:
                 if(message.content.startswith(prefix+j)):
                     return i.commandName
         return None
-
-def addCurrency(id, amount, bal):
-    if(amount > 0):
-        try:
-            bal[str(id)] += 1
-        finally:
-            bal[str(id)] = 1
-        return bal
