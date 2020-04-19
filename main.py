@@ -4,11 +4,12 @@ import os
 
 json = __import__("JsonManager")
 Comm = __import__("Command")
+pyc = __import__("pyconfig")
 
 cmds = Comm.Commands()
 cmds.commands = [Comm.Command(['ping', 'test'], "ping")]
 
-extraPath = "Discordbot/"
+extraPath = pyc.extraPath
 
 bot = commands.Bot(command_prefix= "enc.")
 
