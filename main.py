@@ -8,11 +8,12 @@ Comm = __import__("Command")
 cmds = Comm.Commands()
 cmds.commands = [Comm.Command(['ping', 'test'], "ping")]
 
+extraPath = "Discordbot/"
 
 bot = commands.Bot(command_prefix= "enc.")
 
-config = json.JsonManager(os.path.join(os.getcwd(),"Discordbot/config.json"))
-
+config = json.JsonManager(os.path.join(os.getcwd(), extraPath+"config.json"))
+currency = json.JsonManager(os.path.join(os.getcwd(), extraPath+"Currency.json"))
 
 @bot.event
 async def on_ready():
@@ -25,8 +26,16 @@ async def on_message(message):
     if(message.author.id == bot.user.id):
         return
 
-    if(message.content.startswith(config.load()["prefix"])):
-        command = cmds.checkAllCommands(message, config.load()["prefix"])
+    # if(message.content.startswith(config.load()["prefix"])):
+    command = cmds.checkAllCommands(message, config.load()["prefix"])
+
+    if(command == None):
+        bal = currency.load()
+        try:
+            bal["bal"][str(message.author.id)] += 1
+        except:
+            bal["bal"][str(message.author.id)] = 1
+        currency.save(bal)
 
     
     if(command == "ping"):
