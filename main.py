@@ -38,9 +38,12 @@ async def on_message(message):
         currency.save(bal)
 
 
-        if( "mr peter" in message.content.lower() or
-            "mr. peter" in message.content.lower() or
-            "mrpeter" in message.content.lower()):
+        if(("mr" in message.content or
+            "mister" in message.content or
+            "sr" in message.content or
+            "senor" in message.content ) and
+            "peter" in message.content):
+            
             string = "Baby "+message.author.name
             await message.channel.send(string)
 
