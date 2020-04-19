@@ -11,7 +11,9 @@ economyprefix = "eco."
 cmds = Comm.Commands()
 cmds.commands = [   Comm.Command(["help", "h"], "help", "Sends a list of commands"),
                     Comm.Command(['ping', 'test'], "ping", "Ping Encursedbot to see if it is online"),
-                    Comm.Command([economyprefix+'bal'], economyprefix+"bal", "Check your balance")]
+                    Comm.Command([economyprefix+'bal'], economyprefix+"bal", "Check your balance"),
+                    Comm.Command(["challenge", "codechallenge"], "codechallenge", "Links to a coding challenge.")
+]
 
 extraPath = pyc.extraPath
 
@@ -71,6 +73,9 @@ async def on_message(message):
             await message.channel.send( "You have "+
                                         str(currency.load()["bal"][str(message.author.id)])+
                                         " dollar(s)")
+
+    elif(command == "codechallenge"):
+        await message.channel.send("Visit https://codingchallenge.prushton.repl.co/ for more info")
         
 
 
