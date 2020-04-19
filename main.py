@@ -7,7 +7,8 @@ Comm = __import__("Command")
 pyc = __import__("pyconfig")
 
 cmds = Comm.Commands()
-cmds.commands = [Comm.Command(['ping', 'test'], "ping")]
+cmds.commands = [   Comm.Command(['ping', 'test'], "ping"),
+                    Comm.Command(['eco.bal'], "eco.bal")]
 
 extraPath = pyc.extraPath
 
@@ -40,6 +41,8 @@ async def on_message(message):
 
 
         if(("mr" in message.content.lower() or
+            "ms" in message.content.lower() or
+            "miss" in message.content.lower() or
             "mister" in message.content.lower() or
             "sr" in message.content.lower() or
             "senor" in message.content.lower() ) and
@@ -51,6 +54,12 @@ async def on_message(message):
     
     if(command == "ping"):
         await message.channel.send("Pong")
+
+    if(command.startswith("eco.")):
+        if(".bal" in command):
+            await message.channel.send( "You have "+
+                                        str(currency.load()["bal"][str(message.author.id)])+
+                                        " dollar(s)")
 
 
 
