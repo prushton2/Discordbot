@@ -1,7 +1,8 @@
 class Command:
-    def __init__(self, commands, commandName):
+    def __init__(self, commands, commandName, description):
         self.commands = commands
         self.commandName = commandName
+        self.description = description
 
 
 class Commands:
