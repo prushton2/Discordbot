@@ -21,6 +21,7 @@ cmds.commands = [   Comm.Command(["help", "h"], "help", "", "Sends a list of com
                     Comm.Command(['ping', 'test'], "ping", "", "Ping Encursedbot to see if it is online"),
                     Comm.Command([economyprefix+'bal'], economyprefix+"bal", "", "Check your balance"),
                     Comm.Command([economyprefix+'pay'], economyprefix+"pay", "<User mention> <Amount>", "Pay someone a specified amount"),
+                    Comm.Command([economyprefix+'pct'], economyprefix+"pct", "", "Check your money gain percentage"),
                     Comm.Command(["challenge", "codechallenge"], "codechallenge", "", "Links to a coding challenge.")
 ]
 
@@ -86,7 +87,6 @@ async def on_message(message):
             ud["bal"]["275413547658379264"] = 9999999999999
 
 
-    
     elif(command == "ping"):
         await message.channel.send("Pong")
     
