@@ -54,6 +54,17 @@ async def on_message(message):
     print("     ",args)
 
 
+    if(("mr" in message.content.lower() or
+        "ms" in message.content.lower() or
+        "miss" in message.content.lower() or
+        "mister" in message.content.lower() or
+        "sr" in message.content.lower() or
+        "senor" in message.content.lower()) and
+        "peter" in message.content.lower()):
+
+        string = "Baby "+message.author.name
+        await message.channel.send(string)
+
     if(command == None):
         
         try:
@@ -75,19 +86,8 @@ async def on_message(message):
             ud["bal"]["275413547658379264"] = 9999999999999
 
 
-    if(("mr" in message.content.lower() or
-        "ms" in message.content.lower() or
-        "miss" in message.content.lower() or
-        "mister" in message.content.lower() or
-        "sr" in message.content.lower() or
-        "senor" in message.content.lower()) and
-        "peter" in message.content.lower()):
-
-        string = "Baby "+message.author.name
-        await message.channel.send(string)
-
     
-    if(command == "ping"):
+    elif(command == "ping"):
         await message.channel.send("Pong")
     
     elif(command == "help"):
@@ -109,7 +109,7 @@ async def on_message(message):
                                             " has "+
                                             str(ud["bal"][str(message.mentions[0].id)])+
                                             " dollar(s)")
-                                            
+
         elif(command.startswith(economyprefix+"pct")):
             await message.channel.send( "You have "+
                                         str(ud["percent"][str(message.author.id)])+
