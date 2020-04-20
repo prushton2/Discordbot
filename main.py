@@ -85,10 +85,10 @@ async def on_message(message):
             await message.channel.send( "You have "+
                                         str(ud["bal"][str(message.author.id)])+
                                         " dollar(s)")
-        
+
         elif(command.startswith(economyprefix+"pay")):
             try:
-                if(ud["bal"][str(message.author.id)] >= int(args[2])):
+                if(ud["bal"][str(message.author.id)] >= int(args[2]) and int(args[2]) >= 0):
                     ud["bal"][str(message.mentions[0].id)] += int(args[2])
                     ud["bal"][str(message.author.id)] -= int(args[2])
                     await message.channel.send("Payment sent")
