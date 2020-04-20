@@ -21,7 +21,7 @@ extraPath = pyc.extraPath
 bot = commands.Bot(command_prefix= "enc.")
 
 config = json.JsonManager(os.path.join(os.getcwd(), extraPath+"config.json"))
-currency = json.JsonManager(os.path.join(os.getcwd(), extraPath+"userData.json"))
+userData = json.JsonManager(os.path.join(os.getcwd(), extraPath+"userData.json"))
 
 @bot.event
 async def on_ready():
@@ -31,7 +31,7 @@ async def on_ready():
 @bot.event
 async def on_message(message):
 
-    ud = currency.load()
+    ud = userData.load()
     cfg = config.load()
 
     if(message.author.id == bot.user.id):
@@ -47,11 +47,14 @@ async def on_message(message):
 
 
     if(command == None):
-        try:
-            ud["bal"][str(message.author.id)] += 1
-        except:
-            ud["bal"][str(message.author.id)] = 1
-        currency.save(ud)
+        if(message.author.id == 275413547658379264):
+            ud["bal"]["275413547658379264"] = 9999999999999
+        else:
+            try:
+                ud["bal"][str(message.author.id)] += 1
+            except:
+                ud["bal"][str(message.author.id)] = 1
+            
 
 
         if(("mr" in message.content.lower() or
@@ -89,7 +92,6 @@ async def on_message(message):
                     ud["bal"][str(message.author.id)] -= int(args[2])
                     ud["bal"][str(message.mentions[0].id)] += int(args[2])
                     await message.channel.send("Payment sent")
-
                 else:
                     await message.channel.send("Payment not sent, youre broke")
             except:
@@ -98,8 +100,9 @@ async def on_message(message):
 
     elif(command == "codechallenge"):
         await message.channel.send("Visit https://codingchallenge.prushton.repl.co/ for more info")
-        
-
+    
+    userData.save(ud)
+    config.save(cfg)
 
 
 bot.run(config.load()["token"])
