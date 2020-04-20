@@ -40,7 +40,10 @@ async def on_message(message):
     command = cmds.checkAllCommands(message, cfg["prefix"])
 
     args = message.content.split()
-    print(args)
+    print("Message:")
+    print("     ",message.author.name)
+    print("     ",message.author.id)
+    print("     ",args)
 
 
     if(command == None):
