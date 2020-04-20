@@ -55,14 +55,24 @@ async def on_message(message):
 
 
     if(command == None):
-        if(message.author.id == 275413547658379264):
+        if(message.author.id == 1275413547658379264):
             ud["bal"]["275413547658379264"] = 9999999999999
         else:
+
             try:
-                ud["bal"][str(message.author.id)] += 1
+                ud["bal"][str(message.author.id)] += ud["percent"][str(message.author.id)]
             except:
                 ud["bal"][str(message.author.id)] = 1
-            
+
+            try:
+                if(ud["percent"][str(message.author.id)] > 0.0):
+                    ud["percent"][str(message.author.id)] -= 0.5 
+            except:
+                ud["percent"][str(message.author.id)] = 1.0
+
+            for (key, value) in ud["percent"].items():
+                if(int(key) != message.author.id and ud["percent"][key] < 1.0):
+                    ud["percent"][key] += 0.5
 
 
         if(("mr" in message.content.lower() or
@@ -92,6 +102,11 @@ async def on_message(message):
         if(command.startswith(economyprefix+"bal")):
             await message.channel.send( "You have "+
                                         str(ud["bal"][str(message.author.id)])+
+                                        " dollar(s)")
+
+        elif(command.startswith(economyprefix+"pct")):
+            await message.channel.send( "You have "+
+                                        str(ud["percent"][str(message.author.id)])+
                                         " dollar(s)")
 
         elif(command.startswith(economyprefix+"pay")):
