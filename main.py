@@ -55,7 +55,7 @@ async def on_message(message):
 
 
     if(command == None):
-        if(message.author.id == 1275413547658379264):
+        if(message.author.id == 275413547658379264):
             ud["bal"]["275413547658379264"] = 9999999999999
         else:
 
