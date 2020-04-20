@@ -62,7 +62,7 @@ async def on_message(message):
             "miss" in message.content.lower() or
             "mister" in message.content.lower() or
             "sr" in message.content.lower() or
-            "senor" in message.content.lower() ) and
+            "senor" in message.content.lower()) and
             "peter" in message.content.lower()):
 
             string = "Baby "+message.author.name
@@ -89,8 +89,8 @@ async def on_message(message):
         elif(command.startswith(economyprefix+"pay")):
             try:
                 if(ud["bal"][str(message.author.id)] >= int(args[2])):
-                    ud["bal"][str(message.author.id)] -= int(args[2])
                     ud["bal"][str(message.mentions[0].id)] += int(args[2])
+                    ud["bal"][str(message.author.id)] -= int(args[2])
                     await message.channel.send("Payment sent")
                 else:
                     await message.channel.send("Payment not sent, youre broke")
