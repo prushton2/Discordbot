@@ -111,9 +111,12 @@ async def on_message(message):
                                             " dollar(s)")
 
         elif(command.startswith(economyprefix+"pct")):
-            await message.channel.send( "You have "+
-                                        str(ud["percent"][str(message.author.id)])+
-                                        " dollar(s)")
+            try:
+                await message.channel.send( "You have "+
+                                            str(ud["percent"][str(message.author.id)]*100)+
+                                            "%")
+            except:
+                await message.channel.send("There was an error checking your percent")
 
         elif(command.startswith(economyprefix+"pay")):
             try:
