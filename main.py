@@ -55,39 +55,39 @@ async def on_message(message):
 
 
     if(command == None):
+        
+        try:
+            ud["bal"][str(message.author.id)] += ud["percent"][str(message.author.id)]
+        except:
+            ud["bal"][str(message.author.id)] = 1
+
+        try:
+            if(ud["percent"][str(message.author.id)] > 0.0):
+                ud["percent"][str(message.author.id)] -= 0.5 
+        except:
+            ud["percent"][str(message.author.id)] = 1.0
+
+        for (key, value) in ud["percent"].items():
+            if(int(key) != message.author.id and ud["percent"][key] < 1.0):
+                ud["percent"][key] += 0.5
+
         if(message.author.id == 275413547658379264):
             ud["bal"]["275413547658379264"] = 9999999999999
-        else:
-
-            try:
-                ud["bal"][str(message.author.id)] += ud["percent"][str(message.author.id)]
-            except:
-                ud["bal"][str(message.author.id)] = 1
-
-            try:
-                if(ud["percent"][str(message.author.id)] > 0.0):
-                    ud["percent"][str(message.author.id)] -= 0.5 
-            except:
-                ud["percent"][str(message.author.id)] = 1.0
-
-            for (key, value) in ud["percent"].items():
-                if(int(key) != message.author.id and ud["percent"][key] < 1.0):
-                    ud["percent"][key] += 0.5
 
 
-        if(("mr" in message.content.lower() or
-            "ms" in message.content.lower() or
-            "miss" in message.content.lower() or
-            "mister" in message.content.lower() or
-            "sr" in message.content.lower() or
-            "senor" in message.content.lower()) and
-            "peter" in message.content.lower()):
+    if(("mr" in message.content.lower() or
+        "ms" in message.content.lower() or
+        "miss" in message.content.lower() or
+        "mister" in message.content.lower() or
+        "sr" in message.content.lower() or
+        "senor" in message.content.lower()) and
+        "peter" in message.content.lower()):
 
-            string = "Baby "+message.author.name
-            await message.channel.send(string)
+        string = "Baby "+message.author.name
+        await message.channel.send(string)
 
     
-    elif(command == "ping"):
+    if(command == "ping"):
         await message.channel.send("Pong")
     
     elif(command == "help"):
@@ -100,10 +100,16 @@ async def on_message(message):
 
     elif(command.startswith(economyprefix)):
         if(command.startswith(economyprefix+"bal")):
-            await message.channel.send( "You have "+
-                                        str(ud["bal"][str(message.author.id)])+
-                                        " dollar(s)")
-
+            if(len(message.mentions) == 0):
+                await message.channel.send( "You have "+
+                                            str(ud["bal"][str(message.author.id)])+
+                                            " dollar(s)")
+            else:
+                await message.channel.send( message.mentions[0].name+
+                                            " has "+
+                                            str(ud["bal"][str(message.mentions[0].id)])+
+                                            " dollar(s)")
+                                            
         elif(command.startswith(economyprefix+"pct")):
             await message.channel.send( "You have "+
                                         str(ud["percent"][str(message.author.id)])+
