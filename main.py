@@ -6,6 +6,14 @@ json = __import__("JsonManager")
 Comm = __import__("Command")
 pyc = __import__("pyconfig")
 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+
 economyprefix = "eco."
 
 cmds = Comm.Commands()
@@ -46,7 +54,7 @@ async def on_message(message):
     print("     ",args)
 
 
-    if(command == None):
+    if(command == None and not("encursedbot is disabled" in message.channel.description.lower())):
         if(message.author.id == 275413547658379264):
             ud["bal"]["275413547658379264"] = 9999999999999
         else:
