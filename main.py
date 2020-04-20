@@ -54,7 +54,7 @@ async def on_message(message):
     print("     ",args)
 
 
-    if(command == None and not("encursedbot is disabled" in message.channel.description.lower())):
+    if(command == None):
         if(message.author.id == 275413547658379264):
             ud["bal"]["275413547658379264"] = 9999999999999
         else:
