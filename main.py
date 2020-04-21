@@ -120,9 +120,9 @@ async def on_message(message):
 
         elif(command.startswith(economyprefix+"pay")):
             try:
-                if(ud["bal"][str(message.author.id)] >= int(args[2]) and int(args[2]) >= 0):
-                    ud["bal"][str(message.mentions[0].id)] += int(args[2])
-                    ud["bal"][str(message.author.id)] -= int(args[2])
+                if(ud["bal"][str(message.author.id)] >= float(args[2]) and float(args[2]) >= 0):
+                    ud["bal"][str(message.mentions[0].id)] += float(args[2])
+                    ud["bal"][str(message.author.id)] -= float(args[2])
                     await message.channel.send("Payment sent")
                 else:
                     await message.channel.send("Payment not sent, youre broke")
@@ -138,4 +138,3 @@ async def on_message(message):
 
 
 bot.run(config.load()["token"])
-
