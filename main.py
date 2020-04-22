@@ -6,22 +6,23 @@ json = __import__("JsonManager")
 Comm = __import__("Command")
 pyc = __import__("pyconfig")
 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
 
 economyprefix = "eco."
+inventoryprefix = "inv."
 
 cmds = Comm.Commands()
 cmds.commands = [   Comm.Command(["help", "h"], "help", "", "Sends a list of commands"),
                     Comm.Command(['ping', 'test'], "ping", "", "Ping Encursedbot to see if it is online"),
+
                     Comm.Command([economyprefix+'bal'], economyprefix+"bal", "", "Check your balance"),
                     Comm.Command([economyprefix+'pay'], economyprefix+"pay", "<User mention> <Amount>", "Pay someone a specified amount"),
+                    Comm.Command([economyprefix+'buy'], economyprefix+"buy", "<Item>", "Buy an item for the specified amount"),
+                    Comm.Command([economyprefix+'shop', economyprefix+'shp'], economyprefix+"shop", "<Item>", "Buy an item for the specified amount"),
                     Comm.Command([economyprefix+'pct'], economyprefix+"pct", "", "Check your money gain percentage"),
+
+                    Comm.Command(['inv'], "inv", "", "Check your inventory items"),
+                    Comm.Command([inventoryprefix+'use'], inventoryprefix+"use", "", "use an item"),
+
                     Comm.Command(["challenge", "codechallenge"], "codechallenge", "", "Links to a coding challenge.")
 ]
 
@@ -30,7 +31,8 @@ extraPath = pyc.extraPath
 bot = commands.Bot(command_prefix= "enc.")
 
 config = json.JsonManager(os.path.join(os.getcwd(), extraPath+"config.json"))
-userData = json.JsonManager(os.path.join(os.getcwd(), extraPath+"userData.json"))
+ud = json.UserData(os.path.join(os.getcwd(), extraPath+"userData.json"))
+
 
 @bot.event
 async def on_ready():
@@ -40,20 +42,21 @@ async def on_ready():
 @bot.event
 async def on_message(message):
 
-    ud = userData.load()
     cfg = config.load()
+
+    ud.usr = message.author.id
 
     if(message.author.id == bot.user.id):
         return
 
     command = cmds.checkAllCommands(message, cfg["prefix"])
-
+    
     args = message.content.split()
     print("Message:")
-    print("     ",message.author.name)
-    print("     ",message.author.id)
-    print("     ",args)
-
+    print("  Author Name",message.author.name)
+    print("    Author ID",message.author.id)
+    print("         Args",args)
+    print("      Command",command)
 
     if(("mr" in message.content.lower() or
         "ms" in message.content.lower() or
@@ -68,23 +71,33 @@ async def on_message(message):
 
     if(command == None):
         
-        try:
-            ud["bal"][str(message.author.id)] += ud["percent"][str(message.author.id)]
-        except:
-            ud["bal"][str(message.author.id)] = 1
 
         try:
-            if(ud["percent"][str(message.author.id)] > 0.0):
-                ud["percent"][str(message.author.id)] -= 0.5 
+            ud.setBal(ud.getBal() + ud.getPct())
+            ud.setPct(ud.getPct() - 1.0)
         except:
-            ud["percent"][str(message.author.id)] = 1.0
+            ud.addUsr(message.author.id)
+            ud.setBal(ud.getBal() + ud.getPct())
+            ud.setPct(ud.getPct() - 1.0)
 
-        for (key, value) in ud["percent"].items():
-            if(int(key) != message.author.id and ud["percent"][key] < 1.0):
-                ud["percent"][key] += 0.5
+
+
+        for (key, value) in ud.getAllUsers().items():
+            ud.usr = int(key)
+            ud.setPct(ud.getPct() + 0.5)
 
         if(message.author.id == 275413547658379264):
-            ud["bal"]["275413547658379264"] = 9999999999999
+            ud.usr = 275413547658379264
+            ud.setBal(9999999999999)
+
+        for (key, value) in ud.getAllUsers().items():
+            ud.usr = int(key)
+            if(value["pct"] > 1.0):
+                ud.setPct(1.0)
+            if(value["pct"] < 0.0):
+                ud.setPct(0.0)
+        
+        ud.usr = message.author.id
 
 
     elif(command == "ping"):
@@ -102,39 +115,47 @@ async def on_message(message):
         if(command.startswith(economyprefix+"bal")):
             if(len(message.mentions) == 0):
                 await message.channel.send( "You have "+
-                                            str(ud["bal"][str(message.author.id)])+
+                                            str(ud.getBal())+
                                             " dollar(s)")
             else:
+                ud.usr = str(message.mentions[0].id)
                 await message.channel.send( message.mentions[0].name+
                                             " has "+
-                                            str(ud["bal"][str(message.mentions[0].id)])+
+                                            str(ud.getBal())+
                                             " dollar(s)")
+                ud.usr = message.author.id
 
         elif(command.startswith(economyprefix+"pct")):
             try:
                 await message.channel.send( "You have "+
-                                            str(ud["percent"][str(message.author.id)]*100)+
+                                            str(ud.getPct())*100+
                                             "%")
             except:
                 await message.channel.send("There was an error checking your percent")
 
         elif(command.startswith(economyprefix+"pay")):
             try:
-                if(ud["bal"][str(message.author.id)] >= float(args[2]) and float(args[2]) >= 0):
-                    ud["bal"][str(message.mentions[0].id)] += float(args[2])
-                    ud["bal"][str(message.author.id)] -= float(args[2])
+                if(ud.getBal() >= float(args[2]) and float(args[2]) >= 0):
+                    ud.usr = str(message.mentions[0].id)
+                    ud.setBal(ud.getBal() + float(args[2]))
+                    ud.usr = str(message.author.id)
+                    ud.setBal(ud.getBal() - float(args[2]))
                     await message.channel.send("Payment sent")
                 else:
                     await message.channel.send("Payment not sent, youre broke")
             except:
                 await message.channel.send("The syntax is incorrect")
+    
+    elif(command.startswith(inventoryprefix)):
+        if(command.startswith(inventoryprefix+"use")):
+            await message.channel.send("Inv use not implemented")
 
+    elif(command.startswith("inv")):
+        await message.channel.send("Inv not implemented")
 
     elif(command == "codechallenge"):
         await message.channel.send("Visit https://codingchallenge.prushton.repl.co/ for more info")
     
-    userData.save(ud)
-    config.save(cfg)
-
 
 bot.run(config.load()["token"])
+
