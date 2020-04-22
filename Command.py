@@ -30,7 +30,7 @@ class Items:
 
     def buyItem(self, name, balance):
         for i in self.items:
-            if(i.name == name and balance >= i.cost):
+            if(i.name.lower() == name.lower() and balance >= i.cost):
                 return True, balance - i.cost
         return False, balance
 

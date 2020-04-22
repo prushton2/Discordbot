@@ -17,13 +17,22 @@ cmds.commands = [   Comm.Command(["help", "h"], "help", "", "Sends a list of com
                     Comm.Command([economyprefix+'bal'], economyprefix+"bal", "", "Check your balance"),
                     Comm.Command([economyprefix+'pay'], economyprefix+"pay", "<User mention> <Amount>", "Pay someone a specified amount"),
                     Comm.Command([economyprefix+'buy'], economyprefix+"buy", "<Item>", "Buy an item for the specified amount"),
-                    Comm.Command([economyprefix+'shop', economyprefix+'shp'], economyprefix+"shop", "<Item>", "Buy an item for the specified amount"),
+                    Comm.Command([economyprefix+'shop', economyprefix+'buy'], economyprefix+"shop", "<Item>", "Buy an item for the specified amount"),
                     Comm.Command([economyprefix+'pct'], economyprefix+"pct", "", "Check your money gain percentage"),
 
                     Comm.Command(['inv'], "inv", "", "Check your inventory items"),
                     Comm.Command([inventoryprefix+'use'], inventoryprefix+"use", "", "use an item"),
 
                     Comm.Command(["challenge", "codechallenge"], "codechallenge", "", "Links to a coding challenge.")
+]
+
+items = Comm.Items()
+
+items.items = [
+    Comm.Item("Apple", 10),
+    Comm.Item("Banana", 11),
+    Comm.Item("FakeGameCode", 100),
+    Comm.Item("MessageToSomeone", 20)
 ]
 
 extraPath = pyc.extraPath
@@ -133,6 +142,23 @@ async def on_message(message):
             except:
                 await message.channel.send("There was an error checking your percent")
 
+        elif(command.startswith(economyprefix+"shop")):
+            if(len(args) == 1):
+                await message.channel.send("You need to put an item use "+cfg["prefix"]+economyprefix+"shop list to see whats for sale")
+            elif(args[1] == "list"):
+                for i in items.items:
+                    await message.channel.send(i.name+", $"+str(i.cost))
+            else:
+                worked, newBal = items.buyItem(args[1], ud.getBal())
+                if(worked):
+                    ud.setBal(newBal)
+                    inv = ud.getInv()
+                    inv.append(args[1])
+                    ud.setInv(inv)
+                    await message.channel.send("Successfully bought 1x "+args[1])
+                else:
+                    await message.channel.send("That item doesnt exist.")
+
         elif(command.startswith(economyprefix+"pay")):
             try:
                 if(ud.getBal() >= float(args[2]) and float(args[2]) >= 0):
@@ -148,10 +174,12 @@ async def on_message(message):
     
     elif(command.startswith(inventoryprefix)):
         if(command.startswith(inventoryprefix+"use")):
-            await message.channel.send("Inv use not implemented")
+            await message.channel.send("Inventory use not implemented")
 
     elif(command.startswith("inv")):
-        await message.channel.send("Inv not implemented")
+        inv = ud.getInv()
+        for i in inv:
+            await message.channel.send(i)
 
     elif(command == "codechallenge"):
         await message.channel.send("Visit https://codingchallenge.prushton.repl.co/ for more info")
