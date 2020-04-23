@@ -137,7 +137,7 @@ async def on_message(message):
         elif(command.startswith(economyprefix+"pct")):
             try:
                 await message.channel.send( "You have "+
-                                            str(ud.getPct())*100+
+                                            str(ud.getPct()*100)+
                                             "%")
             except:
                 await message.channel.send("There was an error checking your percent")
@@ -184,6 +184,8 @@ async def on_message(message):
     elif(command == "codechallenge"):
         await message.channel.send("Visit https://codingchallenge.prushton.repl.co/ for more info")
     
+
+
 
 bot.run(config.load()["token"])
 
