@@ -52,14 +52,14 @@ async def on_ready():
 async def on_message(message):
 
     cfg = config.load()
-
     ud.usr = message.author.id
 
     if(message.author.id == bot.user.id):
         return
 
     command = cmds.checkAllCommands(message, cfg["prefix"])
-    
+    item = ""
+
     args = message.content.split()
     print("Message:")
     print("  Author Name",message.author.name)
@@ -75,39 +75,10 @@ async def on_message(message):
         "senor" in message.content.lower()) and
         "peter" in message.content.lower()):
 
-        string = "Baby "+message.author.name
-        await message.channel.send(string)
+        await message.channel.send("Baby "+message.author.name)
 
     if(command == None):
-        
-
-        try:
-            ud.setBal(ud.getBal() + ud.getPct())
-            ud.setPct(ud.getPct() - 1.0)
-        except:
-            ud.addUsr(message.author.id)
-            ud.setBal(ud.getBal() + ud.getPct())
-            ud.setPct(ud.getPct() - 1.0)
-
-
-
-        for (key, value) in ud.getAllUsers().items():
-            ud.usr = int(key)
-            ud.setPct(ud.getPct() + 0.5)
-
-        if(message.author.id == 275413547658379264):
-            ud.usr = 275413547658379264
-            ud.setBal(9999999999999)
-
-        for (key, value) in ud.getAllUsers().items():
-            ud.usr = int(key)
-            if(value["pct"] > 1.0):
-                ud.setPct(1.0)
-            if(value["pct"] < 0.0):
-                ud.setPct(0.0)
-        
-        ud.usr = message.author.id
-
+        json.updateMoney(message.author.id, ud)
 
     elif(command == "ping"):
         await message.channel.send("Pong")
@@ -153,7 +124,7 @@ async def on_message(message):
                 if(worked):
                     ud.setBal(newBal)
                     inv = ud.getInv()
-                    inv.append(args[1])
+                    inv.append(args[1].lower())
                     ud.setInv(inv)
                     await message.channel.send("Successfully bought 1x "+args[1])
                 else:
@@ -174,7 +145,15 @@ async def on_message(message):
     
     elif(command.startswith(inventoryprefix)):
         if(command.startswith(inventoryprefix+"use")):
-            await message.channel.send("Inventory use not implemented")
+            try:
+                inv = ud.getInv()
+                inv.remove(args[1].lower())
+                ud.setInv(inv)
+                item = args[1].lower()
+                await message.channel.send("using "+item)
+            except:
+                await message.channel.send("could not use "+args[1])
+            
 
     elif(command.startswith("inv")):
         inv = ud.getInv()
@@ -184,6 +163,16 @@ async def on_message(message):
     elif(command == "codechallenge"):
         await message.channel.send("Visit https://codingchallenge.prushton.repl.co/ for more info")
     
+
+    if(item == "apple"):
+        await message.channel.send("It was tasty.")
+    elif(item == "banana"):
+        await message.channel.send("It was tasty")
+    elif(item == "fakegamecode"):
+        await message.channel.send("QMB4N-FZ7HT-WMFKR")
+    else:
+        pass#await message.channel.send("Item invalid")
+
 
 
 

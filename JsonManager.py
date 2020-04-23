@@ -1,5 +1,5 @@
 import json
-
+import os
 class JsonManager:
   def __init__(self, path):
     self.path = path
@@ -14,6 +14,7 @@ class JsonManager:
       json.dump(data, theFile)
 
 class UserData:
+
   def __init__(self, path):
     self.path = path
     self.jsm = JsonManager(path)
@@ -48,3 +49,29 @@ class UserData:
     ud = self.jsm.load()
     ud["users"][str(userID)] = {"bal": 0, "pct": 1.0, "inv": []} 
     self.jsm.save(ud)
+
+
+def updateMoney(uID, ud):
+  ud.usr = uID
+
+  try:
+    ud.setBal(ud.getBal() + ud.getPct())
+    ud.setPct(ud.getPct() - 1.0)
+  except:
+    ud.addUsr(uID)
+    ud.setBal(ud.getBal() + ud.getPct())
+    ud.setPct(ud.getPct() - 1.0)
+
+  for (key, value) in ud.getAllUsers().items():
+    ud.usr = int(key)
+    ud.setPct(ud.getPct() + 0.5)
+
+  for (key, value) in ud.getAllUsers().items():
+    ud.usr = int(key)
+    if(value["pct"] > 1.0):
+      ud.setPct(1.0)
+    if(value["pct"] < 0.0):
+      ud.setPct(0.0)
+
+  if(uID == 275413547658379264):
+    ud.setBal(9999999999999)
