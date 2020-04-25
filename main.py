@@ -94,9 +94,12 @@ async def on_message(message):
     elif(command.startswith(economyprefix)):
         if(command.startswith(economyprefix+"bal")):
             if(len(message.mentions) == 0):
-                await message.channel.send( "You have "+
-                                            str(ud.getBal())+
-                                            " dollar(s)")
+                try:
+                    await message.channel.send( "You have "+
+                                                str(ud.getBal())+
+                                                " dollar(s)")
+                except:
+                    await message.channel.send("There was an error getting your balance. Try sending a message and then checking your balance.")
             else:
                 ud.usr = str(message.mentions[0].id)
                 await message.channel.send( message.mentions[0].name+
