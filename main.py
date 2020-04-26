@@ -73,7 +73,7 @@ async def on_message(message):
         "mister" in message.content.lower() or
         "sr" in message.content.lower() or
         "senor" in message.content.lower()) and
-        "peter" in message.content.lower()):
+        ("peter" in message.content.lower() and message.author.id != 275405015915429888)):
 
         await message.channel.send("Baby "+message.author.name)
 
