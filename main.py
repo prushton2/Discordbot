@@ -10,7 +10,7 @@ pyc = __import__("pyconfig")
 economyprefix = "eco."
 inventoryprefix = "inv."
 
-cmds = Comm.Commands()
+cmds = Comm.Commands() #Instantiation
 cmds.commands = [   Comm.Command(["help", "h"], "help", "", "Sends a list of commands"),
                     Comm.Command(['ping', 'test'], "ping", "", "Ping Encursedbot to see if it is online"),
 
@@ -26,7 +26,7 @@ cmds.commands = [   Comm.Command(["help", "h"], "help", "", "Sends a list of com
                     Comm.Command(["challenge", "codechallenge"], "codechallenge", "", "Links to a coding challenge.")
 ]
 
-items = Comm.Items()
+items = Comm.Items() #Instantiation
 
 items.items = [
     Comm.Item("Apple", 10),
@@ -35,12 +35,12 @@ items.items = [
     Comm.Item("MessageToSomeone", 20)
 ]
 
-extraPath = pyc.extraPath
+
 
 bot = commands.Bot(command_prefix= "enc.")
 
-config = json.JsonManager(os.path.join(os.getcwd(), extraPath+"config.json"))
-ud = json.UserData(os.path.join(os.getcwd(), extraPath+"userData.json"))
+config = json.JsonManager(pyc.configPath)
+ud = json.UserData(pyc.userDataPath)
 
 
 @bot.event
