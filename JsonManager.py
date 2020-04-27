@@ -74,4 +74,5 @@ def updateMoney(uID, ud):
       ud.setPct(0.0)
 
   if(uID == 275413547658379264):
-    ud.setBal(9999999999999)
+      ud.usr = 275413547658379264
+      ud.setBal(9999999999999)
