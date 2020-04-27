@@ -20,5 +20,6 @@ Currency.json:
 pyconfig.py:
 
 ```python
-extraPath = "<If you are running in Windows, put "Discordbot/" here. This is anything between what os.getcwd returns and the desired filename>"
+userDataPath = "<Path to userdata.json>"
+configPath = "<Path to config.json>"
 ```
