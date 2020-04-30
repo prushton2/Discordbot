@@ -1,3 +1,5 @@
 config.json
 userData.json
 pyconfig.py
+__pycache__
+.idea
