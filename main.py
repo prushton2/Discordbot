@@ -3,44 +3,17 @@ from discord.ext import commands
 import os
 
 json = __import__("JsonManager")
-Comm = __import__("Command")
 pyc = __import__("pyconfig")
+itemspy = __import__("Items")
 
-
-economyprefix = "eco."
-inventoryprefix = "inv."
-
-cmds = Comm.Commands() #Instantiation
-cmds.commands = [   Comm.Command(["help", "h"], "help", "", "Sends a list of commands"),
-                    Comm.Command(['ping', 'test'], "ping", "", "Ping Encursedbot to see if it is online"),
-
-                    Comm.Command([economyprefix+'bal'], economyprefix+"bal", "", "Check your balance"),
-                    Comm.Command([economyprefix+'pay'], economyprefix+"pay", "<User mention> <Amount>", "Pay someone a specified amount"),
-                    Comm.Command([economyprefix+'buy'], economyprefix+"buy", "<Item>", "Buy an item for the specified amount"),
-                    Comm.Command([economyprefix+'shop', economyprefix+'buy'], economyprefix+"shop", "<Item>", "Buy an item for the specified amount"),
-                    Comm.Command([economyprefix+'pct'], economyprefix+"pct", "", "Check your money gain percentage"),
-
-                    Comm.Command(['inv'], "inv", "", "Check your inventory items"),
-                    Comm.Command([inventoryprefix+'use'], inventoryprefix+"use", "", "use an item"),
-
-                    Comm.Command(["challenge", "codechallenge"], "codechallenge", "", "Links to a coding challenge.")
-]
-
-items = Comm.Items() #Instantiation
-
-items.items = [
-    Comm.Item("Apple", 10),
-    Comm.Item("Banana", 11),
-    Comm.Item("FakeGameCode", 100),
-    Comm.Item("MessageToSomeone", 20)
-]
-
-
-
-bot = commands.Bot(command_prefix= "enc.")
+economyPrefix = "eco."
+inventoryPrefix = "inv."
 
 config = json.JsonManager(pyc.configPath)
 ud = json.UserData(pyc.userDataPath)
+
+bot = commands.Bot(command_prefix= config.load()["prefix"])
+
 
 
 @bot.event
@@ -50,14 +23,10 @@ async def on_ready():
 
 @bot.event
 async def on_message(message):
-
-    cfg = config.load()
     ud.usr = message.author.id
-
     if(message.author.id == bot.user.id):
         return
 
-    command = cmds.checkAllCommands(message, cfg["prefix"])
     item = ""
 
     args = message.content.split()
@@ -65,7 +34,6 @@ async def on_message(message):
     print("  Author Name",message.author.name)
     print("    Author ID",message.author.id)
     print("         Args",args)
-    print("      Command",command)
 
     if(("mr" in message.content.lower() or
         "ms" in message.content.lower() or
@@ -76,106 +44,105 @@ async def on_message(message):
         ("peter" in message.content.lower() and message.author.id != 275405015915429888)):
 
         await message.channel.send("Baby "+message.author.name)
+    await bot.process_commands(message)
 
-    if(command == None):
-        json.updateMoney(message.author.id, ud)
+@bot.command(name = "ping", aliases = ["test"], 
+             brief='Says pong', description='It says pong. What more are you looking for?')
+async def _ping(ctx):
+    await ctx.channel.send("pong")
 
-    elif(command == "ping"):
-        await message.channel.send("Pong")
-    
-    elif(command == "help"):
-        for i in cmds.commands:
-            string = cfg["prefix"]+i.commands[0]+" ("
-            for j in range(len(i.commands)-1):
-                string += i.commands[j+1]+", "
-            string += ")"
-            await message.author.send(string+" | "+cfg["prefix"]+i.commands[0]+" "+i.syntax+" | "+i.description)
+#______________ECONOMY
 
-    elif(command.startswith(economyprefix)):
-        if(command.startswith(economyprefix+"bal")):
-            if(len(message.mentions) == 0):
-                try:
-                    await message.channel.send( "You have "+
-                                                str(ud.getBal())+
-                                                " dollar(s)")
-                except:
-                    await message.channel.send("There was an error getting your balance. Try sending a message and then checking your balance.")
-            else:
-                ud.usr = str(message.mentions[0].id)
-                await message.channel.send( message.mentions[0].name+
-                                            " has "+
-                                            str(ud.getBal())+
-                                            " dollar(s)")
-                ud.usr = message.author.id
-
-        elif(command.startswith(economyprefix+"pct")):
-            try:
-                await message.channel.send( "You have "+
-                                            str(ud.getPct()*100)+
-                                            "%")
-            except:
-                await message.channel.send("There was an error checking your percent")
-
-        elif(command.startswith(economyprefix+"shop")):
-            if(len(args) == 1):
-                await message.channel.send("You need to put an item use "+cfg["prefix"]+economyprefix+"shop list to see whats for sale")
-            elif(args[1] == "list"):
-                for i in items.items:
-                    await message.channel.send(i.name+", $"+str(i.cost))
-            else:
-                worked, newBal = items.buyItem(args[1], ud.getBal())
-                if(worked):
-                    ud.setBal(newBal)
-                    inv = ud.getInv()
-                    inv.append(args[1].lower())
-                    ud.setInv(inv)
-                    await message.channel.send("Successfully bought 1x "+args[1])
-                else:
-                    await message.channel.send("That item doesnt exist.")
-
-        elif(command.startswith(economyprefix+"pay")):
-            try:
-                if(ud.getBal() >= float(args[2]) and float(args[2]) >= 0):
-                    ud.usr = str(message.mentions[0].id)
-                    ud.setBal(ud.getBal() + float(args[2]))
-                    ud.usr = str(message.author.id)
-                    ud.setBal(ud.getBal() - float(args[2]))
-                    await message.channel.send("Payment sent")
-                else:
-                    await message.channel.send("Payment not sent, youre broke")
-            except:
-                await message.channel.send("The syntax is incorrect")
-    
-    elif(command.startswith(inventoryprefix)):
-        if(command.startswith(inventoryprefix+"use")):
-            try:
-                inv = ud.getInv()
-                inv.remove(args[1].lower())
-                ud.setInv(inv)
-                item = args[1].lower()
-                await message.channel.send("using "+item)
-            except:
-                await message.channel.send("could not use "+args[1])
-            
-
-    elif(command.startswith("inv")):
-        inv = ud.getInv()
-        for i in inv:
-            await message.channel.send(i)
-
-    elif(command == "codechallenge"):
-        await message.channel.send("Visit https://codingchallenge.prushton.repl.co/ for more info")
-    
-
-    if(item == "apple"):
-        await message.channel.send("It was tasty.")
-    elif(item == "banana"):
-        await message.channel.send("It was tasty")
-    elif(item == "fakegamecode"):
-        await message.channel.send("QMB4N-FZ7HT-WMFKR")
+@bot.command(name = economyPrefix+"bal", aliases = [], category="economy",
+             brief='shows balance', description= config.load()["prefix"]+economyPrefix+'bal <user mention>')
+async def _bal(ctx):
+    if(len(ctx.message.mentions) == 0):
+        try:
+            await ctx.channel.send( "You have "+
+                                        str(ud.getBal())+
+                                        " dollar(s)")
+        except:
+            await ctx.channel.send("There was an error getting your balance. Try sending a message and then checking your balance.")
     else:
-        pass#await message.channel.send("Item invalid")
+        ud.usr = str(ctx.message.mentions[0].id)
+        await ctx.channel.send( ctx.message.mentions[0].name+
+                                " has "+
+                                str(ud.getBal())+
+                                " dollar(s)")
+        ud.usr = ctx.author.id
 
+@bot.command(name = economyPrefix+"pct", aliases = [], 
+             brief='shows money gain percentage', description= "Every time you send a message, you gain your percent in money, and lose 50%. Everyone else gains 50%. Percents cannot exceed 0 and 100")
+async def _pct(ctx):
+        try:
+            await ctx.message.channel.send( "You have "+
+                                        str(ud.getPct()*100)+
+                                        "%")
+        except:
+            await ctx.message.channel.send("There was an error checking your percent")
+
+@bot.command(name = economyPrefix+"pay", aliases = [], 
+             brief='Pays someone', description= "Pays someone the specified amount")
+async def _pay(ctx, mention, amount):
+    try:
+        if(ud.getBal() >= float(amount) and float(amount) >= 0):
+            ud.usr = str(ctx.message.mentions[0].id)
+            ud.setBal(ud.getBal() + float(amount))
+            ud.usr = str(ctx.message.author.id)
+            ud.setBal(ud.getBal() - float(amount))
+            await ctx.message.channel.send("Payment sent")
+        else:
+            await ctx.message.channel.send("Payment not sent, youre broke")
+    except:
+        await ctx.message.channel.send("The syntax is incorrect")
+
+@bot.command(name = economyPrefix+"shop", aliases = [economyPrefix+"buy"], 
+             brief='Buy an item', description= "type list for a list of items, or type an item name to buy it")
+async def _buy(ctx, item):
+    if(item == "list"):
+        for i in itemspy.itemsClass.allItems:
+            await ctx.message.channel.send(i.name+", $"+str(i.cost))
+    else:
+        worked, newBal = itemspy.itemsClass.buyItem(item, ud.getBal())
+        if(worked):
+            ud.setBal(newBal)
+            inv = ud.getInv()
+            inv.append(item.lower())
+            ud.setInv(inv)
+            await ctx.message.channel.send("Successfully bought 1x "+item)
+        else:
+            await ctx.message.channel.send("That item doesnt exist.")
+
+#__________________________INVENTORY
+
+
+@bot.command(name = "inv", aliases = [], 
+             brief='Checks your inventory', description= "Checks your inventory")
+async def _inv(ctx):
+    inv = ud.getInv()
+    for i in inv:
+        await ctx.message.channel.send(i)
+
+@bot.command(name = inventoryPrefix+"use", aliases = [], 
+             brief='Uses an item', description= "Uses an item")
+async def _use(ctx, item):
+    try:
+        inv = ud.getInv()
+        inv.remove(item.lower())
+        ud.setInv(inv)
+        item = item.lower()
+        await ctx.message.channel.send("using "+item)
+
+        if(item == "apple"):
+            await ctx.message.channel.send("It was tasty.")
+        elif(item == "banana"):
+            await ctx.message.channel.send("It was tasty")
+        elif(item == "fakegamecode"):
+            await ctx.message.channel.send("QMB4N-FZ7HT-WMFKR")
+
+
+    except:
+        await ctx.message.channel.send("could not use "+item)
 
 
 

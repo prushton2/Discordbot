@@ -12,9 +12,9 @@ Config.json:
 }
 ```
 
-Currency.json:
+userData.json:
 ```javascript
-{"bal": {} }
+{"users": {} }
 ```
 
 pyconfig.py:
