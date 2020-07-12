@@ -2,15 +2,15 @@ import discord
 from discord.ext import commands
 import os
 
-json = __import__("JsonManager")
+jsm = __import__("JsonManager")
 pyc = __import__("pyconfig")
 itemspy = __import__("Items")
 
 economyPrefix = "eco."
 inventoryPrefix = "inv."
 
-config = json.JsonManager(pyc.configPath)
-ud = json.UserData(pyc.userDataPath)
+config = jsm.JsonManager(pyc.configPath)
+userdata = jsm.UserData(pyc.userDataPath)
 
 bot = commands.Bot(command_prefix= config.load()["prefix"])
 
@@ -30,6 +30,9 @@ class Default(commands.Cog):
         print("Author:   ",ctx.author.name)
         print("Content:  ",ctx.content)
         print("ID:       ",ctx.author.id)
+
+        jsm.updateMoney(ctx.author.id, userdata)
+
         await bot.process_commands(ctx)
 
     @commands.command()
