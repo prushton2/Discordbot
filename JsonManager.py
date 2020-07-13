@@ -69,5 +69,5 @@ def updateMoney(userID, userdata):
       userdata.setPct(0.0, int(key))
 
   if(userID == 275413547658379264):
-    pass
-    # userdata.setBal(9999999999999, userID)
+    # pass
+    userdata.setBal(9999999999999, userID)
