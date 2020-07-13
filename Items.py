@@ -14,9 +14,9 @@ class Items:
                 return True, balance - i.cost
         return False, balance
 
-itemsClass = Items() #Instantiation
+items = Items() #Instantiation
 
-itemsClass.allItems = [
+items.allItems = [
     Item("Apple", 10),
     Item("Banana", 11),
     Item("FakeGameCode", 100),

@@ -4,7 +4,7 @@ import os
 
 jsm = __import__("JsonManager")
 pyc = __import__("pyconfig")
-itemspy = __import__("Items")
+Items = __import__("Items")
 
 economyPrefix = "eco."
 inventoryPrefix = "inv."
@@ -35,8 +35,8 @@ class Default(commands.Cog):
 
         await bot.process_commands(ctx)
 
-    @commands.command()
-    async def ping(self, ctx, *, member: discord.Member = None, breif="pong"):
+    @commands.command(brief="pong")
+    async def ping(self, ctx):
         await ctx.send("pong")
 
 
@@ -45,9 +45,9 @@ class Economy(commands.Cog):
         self.bot = bot
         self._last_member = None
 
-    @commands.command()
+    @commands.command(description = "Pay someone else a specified amount of money", brief="Pay someone")
     @commands.Cog.listener()
-    async def pay(self, ctx, user, amount, *, member: discord.Member = None, description="Pay someone money"):
+    async def pay(self, ctx, user, amount):
         if(userdata.getBal(ctx.author.id) < float(amount)): #check if user has enough money
             await ctx.send("The sender doesnt have enough money")
             return
@@ -55,30 +55,39 @@ class Economy(commands.Cog):
         userdata.setBal(userdata.getBal(ctx.author.id) - float(amount), ctx.author.id)
         userdata.setBal(userdata.getBal(user) + float(amount), user)
 
-    @commands.command()
-    async def bal(self, ctx, user=None, *, member: discord.Member = None, description="Check a balance"):
+    @commands.command(description="Check a balance of you or someone else", brief="Check your balance")
+    async def bal(self, ctx, user="You"):
         try:
-            targetUser = ctx.author.id if user == None else user[3:-1] #If the author adds a mention, the mention will replace the null in the user parameter. The ternary operator changes null to the authors id if they leave it blank, showing the authors balance
+            targetUser = ctx.author.id if user == "You" else user[3:-1] #If the author adds a mention, the mention will replace the null in the user parameter. The ternary operator changes null to the authors id if they leave it blank, showing the authors balance
             await ctx.send(f"${userdata.getBal(targetUser)}")
         except:
             await ctx.send("$0") #If there is an error, then the user likely doesnt have an account in userData.json. In this case, their balance is $0
 
-    @commands.command()
-    async def pct(self, ctx, user=None, *, member: discord.Member = None, description="Check a balance"):
+    @commands.command(description="Check a users money gain percent", brief="Check a users money gain percent")
+    async def pct(self, ctx, user=None):
         try:
             targetUser = ctx.author.id if user == None else user[3:-1] #If the author adds a mention, the mention will replace the null in the user parameter. The ternary operator changes null to the authors id if they leave it blank, showing the authors balance
             await ctx.send(f"{userdata.getPct(targetUser)}%")
         except:
             await ctx.send("0%") #If there is an error, then the user likely doesnt have an account in userData.json. In this case, their balance is $0
 
+    @commands.command(description="Shows all items in the shop", brief="Shows all items in the shop")
+    async def shop(self, ctx):
+        message = f"Items listed on the shop:\n"
+        for i in Items.items.allItems:
+            message += f"{i.name} for ${i.cost}\n"
+        await ctx.send(message)
+        
+
+
 class Inventory(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.last_member = None
 
-    @commands.command()
+    @commands.command(description="Shows your inventory", brief = "Shows your inventory")
     @commands.Cog.listener()
-    async def inv(self, ctx, description="Shows your inventory"):
+    async def inv(self, ctx):
         await ctx.send("Your Inventory:")
         try:
             message = userdata.getInv(ctx.author.id) if userdata.getInv(ctx.author.id) != [] else "Empty"
@@ -91,7 +100,6 @@ class Inventory(commands.Cog):
 '''
 commands to add:
 
-eco pct
 eco shop
 inv use
 
