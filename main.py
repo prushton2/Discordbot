@@ -47,13 +47,23 @@ class Economy(commands.Cog):
 
     @commands.command()
     @commands.Cog.listener()
-    async def pay(self, ctx, user, amount, *, member: discord.Member = None, description="<user mention> <amount>"):
+    async def pay(self, ctx, user, amount, *, member: discord.Member = None, description="Pay someone money"):
         if(userdata.getBal(ctx.author.id) < float(amount)): #check if user has enough money
             await ctx.send("The sender doesnt have enough money")
             return
         user = user[3:-1] #turn a mention into a user id
         userdata.setBal(userdata.getBal(ctx.author.id) - float(amount), ctx.author.id)
         userdata.setBal(userdata.getBal(user) + float(amount), user)
+
+    @commands.command()
+    async def bal(self, ctx, user=None, *, member: discord.Member = None, description="Check a balance"):
+        try:
+            targetUser = ctx.author.id if user == None else user[3:-1] #If the author adds a mention, the mention will replace the null in the user parameter. The ternary operator changes null to the authors id if they leave it blank, showing the authors balance
+            await ctx.send(f"${userdata.getBal(targetUser)}")
+        except:
+            await ctx.send("$0") #If there is an error, then the user likely doesnt have an account in userData.json. In this case, their balance is $0
+
+
 
 bot.add_cog(Default(bot))
 bot.add_cog(Economy(bot))
