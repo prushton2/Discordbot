@@ -63,10 +63,28 @@ class Economy(commands.Cog):
         except:
             await ctx.send("$0") #If there is an error, then the user likely doesnt have an account in userData.json. In this case, their balance is $0
 
+class Inventory(commands.Cog):
+    def __init__(self, bot):
+        self.bot = bot
+        self.last_member = None
+
+    @commands.command()
+    @commands.Cog.listener()
+    async def inv(self, ctx, description="Shows your inventory"):
+        await ctx.send("Your Inventory:")
+        try:
+            message = userdata.getInv(ctx.author.id) if userdata.getInv(ctx.author.id) != [] else "Empty"
+            await ctx.send(message)
+
+        except:
+            await ctx.send("Empty")
+
+
 
 
 bot.add_cog(Default(bot))
 bot.add_cog(Economy(bot))
+bot.add_cog(Inventory(bot))
 
 bot.run(config.load()["token"])
 
