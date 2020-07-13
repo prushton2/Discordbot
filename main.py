@@ -15,7 +15,7 @@ userdata = jsm.UserData(pyc.userDataPath)
 bot = commands.Bot(command_prefix= config.load()["prefix"])
 
 @bot.event
-async def on_ready():
+async def on_ready(): #
     await bot.change_presence(activity=discord.Game(name=config.load()["prefix"]+"help"))
     print("Bot is ready")
 
@@ -25,18 +25,18 @@ class Default(commands.Cog):
         self._last_member = None
 
     @bot.event
-    @commands.Cog.listener()
+    @commands.Cog.listener() #run on every message to update their money
     async def on_message(self, ctx):
-        print("Author:   ",ctx.author.name)
-        print("Content:  ",ctx.content)
-        print("ID:       ",ctx.author.id)
+        print("   Author:",ctx.author.name)
+        print("  Content:",ctx.content)
+        print("       ID:",ctx.author.id)
 
         jsm.updateMoney(ctx.author.id, userdata)
 
         await bot.process_commands(ctx)
 
     @commands.command()
-    async def ping(self, ctx, *, member: discord.Member = None, brief="pong"):
+    async def ping(self, ctx, *, member: discord.Member = None, breif="pong"):
         await ctx.send("pong")
 
 
@@ -47,8 +47,13 @@ class Economy(commands.Cog):
 
     @commands.command()
     @commands.Cog.listener()
-    async def pay(self, ctx, *, member: discord.Member = None, brief="pay someone"):
-        await ctx.send("no")
+    async def pay(self, ctx, user, amount, *, member: discord.Member = None, description="<user mention> <amount>"):
+        if(userdata.getBal(ctx.author.id) < float(amount)): #check if user has enough money
+            await ctx.send("The sender doesnt have enough money")
+            return
+        user = user[3:-1] #turn a mention into a user id
+        userdata.setBal(userdata.getBal(ctx.author.id) - float(amount), ctx.author.id)
+        userdata.setBal(userdata.getBal(user) + float(amount), user)
 
 bot.add_cog(Default(bot))
 bot.add_cog(Economy(bot))
