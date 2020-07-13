@@ -54,6 +54,7 @@ class Economy(commands.Cog):
         user = user[3:-1] #turn a mention into a user id
         userdata.setBal(userdata.getBal(ctx.author.id) - float(amount), ctx.author.id)
         userdata.setBal(userdata.getBal(user) + float(amount), user)
+        await ctx.send(f"Sent ${amount} to {user}")
 
     @commands.command(description="Check a balance of you or someone else", brief="Check your balance")
     async def bal(self, ctx, user="You"):
@@ -82,16 +83,20 @@ class Economy(commands.Cog):
     async def buy(self, ctx, item, amount=1):
         amountBought = 0 #used to count the number of items bought, which is read back to the user
         userid = ctx.author.id
+
         for i in range(amount):
             purchaseMade, newBal = Items.items.buyItem(item, userdata.getBal(userid))
+
             if(purchaseMade):
                 userdata.setBal(newBal, userid)
                 newInv = userdata.getInv(userid)
                 newInv.append(item)
                 userdata.setInv(newInv, userid)
                 amountBought += 1
+        
         await ctx.send(f"Bought {amountBought}x {item}")
-
+        if(amountBought != amount):
+            await ctx.send("Either you don't have enough money to buy the item(s) or the item doesnt exist")
 
 class Inventory(commands.Cog):
     def __init__(self, bot):
@@ -109,7 +114,7 @@ class Inventory(commands.Cog):
         except:
             await ctx.send("Empty")
 
-    @commands.command(description="Use an inventory item", brief = "Only message to someone works")
+    @commands.command(description="Use an inventory item\nmessage to someone: <user mention> <message>", brief = "Only message to someone works")
     async def use(self, ctx, item):
         args = ctx.message.content.split()
 
