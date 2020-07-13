@@ -109,7 +109,7 @@ class Inventory(commands.Cog):
         except:
             await ctx.send("Empty")
 
-    @commands.command(description="Shows your inventory", brief = "Shows your inventory")
+    @commands.command(description="Use an inventory item", brief = "Only message to someone works")
     async def use(self, ctx, item):
         args = ctx.message.content.split()
 
@@ -118,7 +118,7 @@ class Inventory(commands.Cog):
             newInv.remove(item.lower())
         except:
             pass
-        
+
         if(newInv == userdata.getInv(ctx.author.id)):
             await ctx.send("You dont have that in your inventory")
         else:
