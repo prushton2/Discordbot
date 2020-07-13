@@ -31,7 +31,8 @@ class Default(commands.Cog):
         print("  Content:",ctx.content)
         print("       ID:",ctx.author.id)
 
-        jsm.updateMoney(ctx.author.id, userdata)
+        if(not ctx.message.content.startswith(".")):
+            jsm.updateMoney(ctx.author.id, userdata)
 
         await bot.process_commands(ctx)
 
