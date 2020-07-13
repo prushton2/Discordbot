@@ -36,7 +36,7 @@ class UserData:
 
   def getInv(self, userID):
     return self.jsm.load()["users"][str(userID)]["inv"]
-  def setInv(self, inv):
+  def setInv(self, inv, userID):
     ud = self.jsm.load()
     ud["users"][str(userID)]["inv"] = inv
     self.jsm.save(ud)
@@ -69,4 +69,5 @@ def updateMoney(userID, userdata):
       userdata.setPct(0.0, int(key))
 
   if(userID == 275413547658379264):
-    userdata.setBal(9999999999999, userID)
+    pass
+    # userdata.setBal(9999999999999, userID)

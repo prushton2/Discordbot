@@ -78,6 +78,19 @@ class Economy(commands.Cog):
             message += f"{i.name} for ${i.cost}\n"
         await ctx.send(message)
         
+    @commands.command(description="Buy an item from the shop", brief="Buy an item")
+    async def buy(self, ctx, item, amount=1):
+        amountBought = 0 #used to count the number of items bought, which is read back to the user
+        userid = ctx.author.id
+        for i in range(amount):
+            purchaseMade, newBal = Items.items.buyItem(item, userdata.getBal(userid))
+            if(purchaseMade):
+                userdata.setBal(newBal, userid)
+                newInv = userdata.getInv(userid)
+                newInv.append(item)
+                userdata.setInv(newInv, userid)
+                amountBought += 1
+        await ctx.send(f"Bought {amountBought}x {item}")
 
 
 class Inventory(commands.Cog):
