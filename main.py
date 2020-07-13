@@ -56,7 +56,7 @@ class Economy(commands.Cog):
         try:
             userdata.setBal(userdata.getBal(user) + float(amount), user)
             userdata.setBal(userdata.getBal(ctx.author.id) - float(amount), ctx.author.id)
-            await ctx.send(f"Sent ${amount} to {user}")
+            await ctx.send(f"Sent ${amount} to <@!{user}>")
         except:
             userdata.setBal(senderBal, ctx.author.id)
             await ctx.send(f"Error sending ${amount} to <@!{user}>, no transaction was made")
@@ -136,6 +136,7 @@ class Inventory(commands.Cog):
                 userID = ctx.message.mentions[0]
                 finalMessage = " ".join(args[3:])
                 await userID.send(finalMessage)
+                await ctx.send(f"Sent {finalMessage} to <@!{userID}>")
 
             userdata.setInv(newInv, ctx.author.id)
 
