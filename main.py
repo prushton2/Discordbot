@@ -15,7 +15,7 @@ userdata = jsm.UserData(pyc.userDataPath)
 bot = commands.Bot(command_prefix= config.load()["prefix"])
 
 @bot.event
-async def on_ready(): #
+async def on_ready():
     await bot.change_presence(activity=discord.Game(name=config.load()["prefix"]+"help"))
     print("Bot is ready")
 
@@ -31,7 +31,7 @@ class Default(commands.Cog):
         print("  Content:",ctx.content)
         print("       ID:",ctx.author.id)
 
-        if(not ctx.message.content.startswith(".")):
+        if(not ctx.content.startswith(".")):
             jsm.updateMoney(ctx.author.id, userdata)
 
         await bot.process_commands(ctx)
