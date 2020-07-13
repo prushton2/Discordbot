@@ -109,11 +109,31 @@ class Inventory(commands.Cog):
         except:
             await ctx.send("Empty")
 
+    @commands.command(description="Shows your inventory", brief = "Shows your inventory")
+    async def use(self, ctx, item):
+        args = ctx.message.content.split()
+
+        try:
+            newInv = userdata.getInv(ctx.author.id)
+            newInv.remove(item.lower())
+        except:
+            pass
+        
+        if(newInv == userdata.getInv(ctx.author.id)):
+            await ctx.send("You dont have that in your inventory")
+        else:
+            if(item.lower() == "messagetosomeone"):
+                userID = ctx.message.mentions[0]
+                finalMessage = " ".join(args[3:])
+                await userID.send(finalMessage)
+
+            userdata.setInv(newInv, ctx.author.id)
+
+
 
 '''
 commands to add:
 
-eco shop
 inv use
 
 '''

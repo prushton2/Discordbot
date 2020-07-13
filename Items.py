@@ -17,8 +17,8 @@ class Items:
 items = Items() #Instantiation
 
 items.allItems = [
-    Item("Apple", 10),
-    Item("Banana", 11),
-    Item("FakeGameCode", 100),
-    Item("MessageToSomeone", 20)
+    Item("apple", 10),
+    Item("banana", 11),
+    Item("fakecode", 100),
+    Item("messagetosomeone", 20)
 ]
