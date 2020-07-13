@@ -52,9 +52,14 @@ class Economy(commands.Cog):
             await ctx.send("The sender doesnt have enough money")
             return
         user = user[3:-1] #turn a mention into a user id
-        userdata.setBal(userdata.getBal(ctx.author.id) - float(amount), ctx.author.id)
-        userdata.setBal(userdata.getBal(user) + float(amount), user)
-        await ctx.send(f"Sent ${amount} to {user}")
+        senderBal = userdata.getBal(ctx.author.id)
+        try:
+            userdata.setBal(userdata.getBal(user) + float(amount), user)
+            userdata.setBal(userdata.getBal(ctx.author.id) - float(amount), ctx.author.id)
+            await ctx.send(f"Sent ${amount} to {user}")
+        except:
+            userdata.setBal(senderBal, ctx.author.id)
+            await ctx.send(f"Error sending ${amount} to <@!{user}>, no transaction was made")
 
     @commands.command(description="Check a balance of you or someone else", brief="Check your balance")
     async def bal(self, ctx, user="You"):
