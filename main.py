@@ -1,6 +1,7 @@
 import discord
 from discord.ext import commands
 import os
+import colorama
 
 jsm = __import__("JsonManager")
 pyc = __import__("pyconfig")
@@ -19,24 +20,39 @@ async def on_ready():
     await bot.change_presence(activity=discord.Game(name=config.load()["prefix"]+"help"))
     print("Bot is ready")
 
+class onMessage(commands.Cog):
+    def __init__(self, bot):
+        self.bot = bot
+        self._last_member = None
+    
+    @commands.Cog.listener() #run on every message to update money
+    async def on_message(self, ctx):
+        authorColor = colorama.Fore.CYAN
+        messageColor = colorama.Fore.GREEN if (ctx.content.startswith(config.load()["prefix"])) else colorama.Fore.RED
+        idColor = colorama.Fore.BLUE
+
+        if(ctx.author == bot.user):
+            authorColor = colorama.Fore.MAGENTA
+            messageColor = colorama.Fore.MAGENTA
+            idColor = colorama.Fore.MAGENTA
+
+        print("==========================================================")
+        print(authorColor+"   Author:",ctx.author.name)
+        print(messageColor+"  Content:",ctx.content)
+        print(idColor+"       ID:",ctx.author.id, colorama.Style.RESET_ALL)
+
+        if(not ctx.content.startswith(".")):
+            jsm.updateMoney(ctx.author.id, userdata)
+
+        # await bot.process_commands(ctx)
+
 class Default(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self._last_member = None
 
-    @bot.event
-    @commands.Cog.listener() #run on every message to update their money
-    async def on_message(self, ctx):
-        print("   Author:",ctx.author.name)
-        print("  Content:",ctx.content)
-        print("       ID:",ctx.author.id)
-
-        if(not ctx.content.startswith(".")):
-            jsm.updateMoney(ctx.author.id, userdata)
-
-        await bot.process_commands(ctx)
-
     @commands.command(brief="pong")
+    @commands.Cog.listener()
     async def ping(self, ctx):
         await ctx.send("pong")
 
@@ -149,6 +165,7 @@ commands to add:
 inv use
 
 '''
+bot.add_cog(onMessage(bot))
 bot.add_cog(Default(bot))
 bot.add_cog(Economy(bot))
 bot.add_cog(Inventory(bot))
