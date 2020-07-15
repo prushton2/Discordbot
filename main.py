@@ -7,8 +7,6 @@ jsm = __import__("JsonManager")
 pyc = __import__("pyconfig")
 Items = __import__("Items")
 
-economyPrefix = "eco."
-inventoryPrefix = "inv."
 
 config = jsm.JsonManager(pyc.configPath)
 userdata = jsm.UserData(pyc.userDataPath)
@@ -28,8 +26,9 @@ class onMessage(commands.Cog):
     @commands.Cog.listener() #run on every message to update money
     async def on_message(self, ctx):
         authorColor = colorama.Fore.CYAN
-        messageColor = colorama.Fore.GREEN if (ctx.content.startswith(config.load()["prefix"])) else colorama.Fore.RED
+        messageColor = colorama.Fore.GREEN if (ctx.content.startswith(config.load()["prefix"])) else colorama.Fore.CYAN
         idColor = colorama.Fore.BLUE
+        serverColor = colorama.Fore.RED
 
         if(ctx.author == bot.user):
             authorColor = colorama.Fore.MAGENTA
@@ -37,9 +36,11 @@ class onMessage(commands.Cog):
             idColor = colorama.Fore.MAGENTA
 
         print("==========================================================")
-        print(authorColor+"   Author:",ctx.author.name)
+        print(authorColor+ "   Author:",ctx.author.name)
         print(messageColor+"  Content:",ctx.content)
-        print(idColor+"       ID:",ctx.author.id, colorama.Style.RESET_ALL)
+        print(idColor+     "  User ID:",ctx.author.id)
+        print(serverColor+ "Server ID:",ctx.guild.id, colorama.Style.RESET_ALL)
+
 
         if(not ctx.content.startswith(".")):
             jsm.updateMoney(ctx.author.id, userdata)
