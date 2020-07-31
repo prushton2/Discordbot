@@ -44,7 +44,7 @@ class onMessage(commands.Cog):
         print(serverColor+ "Server ID:",ctx.guild.id, colorama.Style.RESET_ALL)
 
 
-        if(not ctx.content.startswith(".")):
+        if(not ctx.content.startswith(".") or ctx.author == bot.user):
             jsm.updateMoney(ctx.author.id, userdata)
         
         if(ctx.author != bot.user):
