@@ -5,11 +5,13 @@ import colorama
 
 jsm = __import__("JsonManager")
 pyc = __import__("pyconfig")
+Banime = __import__("banime")
 Items = __import__("Items")
 
 
 config = jsm.JsonManager(pyc.configPath)
 userdata = jsm.UserData(pyc.userDataPath)
+banime = Banime.Banime(Banime.bannedAnime)
 
 bot = commands.Bot(command_prefix= config.load()["prefix"])
 
@@ -31,7 +33,7 @@ class onMessage(commands.Cog):
         serverColor = colorama.Fore.RED
 
         if(ctx.author == bot.user):
-            authorColor = colorama.Fore.MAGENTA
+            authorColor = colorama.Fore.MAGENTA 
             messageColor = colorama.Fore.MAGENTA
             idColor = colorama.Fore.MAGENTA
 
@@ -44,7 +46,11 @@ class onMessage(commands.Cog):
 
         if(not ctx.content.startswith(".")):
             jsm.updateMoney(ctx.author.id, userdata)
-
+        
+        if(ctx.author != bot.user):
+            warning, relatedAnime = banime.check(ctx.content)
+            if(warning != ""):
+                await ctx.channel.send(f"Warning: You saying {warning} is related to the banned anime {relatedAnime}. You have received a warning.")
         # await bot.process_commands(ctx)
 
 class Default(commands.Cog):
@@ -56,6 +62,10 @@ class Default(commands.Cog):
     @commands.Cog.listener()
     async def ping(self, ctx):
         await ctx.send("pong")
+
+    @commands.command(brief="check the banned anime", description="Check the banned anime. This changes when the bot wakes up every morning sometime after 6:00")
+    async def banime(self, ctx):
+        await ctx.send(f"Todays banned anime is {banime.bannedanime.name}")
 
 
 class Economy(commands.Cog):
