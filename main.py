@@ -214,7 +214,6 @@ class Voice(commands.Cog):
             pass
 
 
-
         video = Video.Video(url, ctx.author, ctx.guild.id)
         try:
             voiceClient = await ctx.author.voice.channel.connect()
