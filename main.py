@@ -1,6 +1,6 @@
 import discord
 import asyncio
-import youtube_dl as ytdl
+import pafy
 
 from discord.ext import commands
 import os
@@ -196,19 +196,18 @@ class Voice(commands.Cog):
 
     @commands.command(description="Play a youtube video", brief = "play a song")
     async def play(self, ctx, url):
-        video = Video.Video(url, ctx.author)
+        video = Video.Video(url, ctx.author, ctx.guild.id)
         try:
             voiceClient = await ctx.author.voice.channel.connect()
         except:
             await ctx.send("You arent in a voice channel")
             return
             
-        # await ctx.send(video.get_embed())
         await ctx.send(f"Playing {video.title} by {video.uploader}")
+        # print(video.test)
 
-        voiceClient.play(discord.FFmpegPCMAudio(f"{video.title}.webm"), after=lambda e: print('done', e))
+        voiceClient.play(discord.FFmpegPCMAudio(f"{video.path}.webm"), after=lambda e: print('done', e))
         
-
 
 '''
 commands to add:

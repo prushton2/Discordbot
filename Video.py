@@ -1,4 +1,4 @@
-import youtube_dl as ytdl
+import pafy
 import discord
 
 options = {
@@ -10,19 +10,22 @@ options = {
 
 
 class Video:
-    def __init__(self, url, requester):
-        with ytdl.YoutubeDL(options) as ydl:
-            self.info = self.getInfo(url)
+    def __init__(self, url, requester, path):
 
-            self.video_format = self.info["formats"][0]
-            self.stream_url = self.info["url"]
-            self.video_url = self.info["webpage_url"]
-            self.title = self.info["title"]
-            self.uploader = self.info["uploader"] if "uploader" in self.info else ""
-            self.thumbnail = self.info["thumbnail"] if "thumbnail" in self.info else None
-            self.requested_by = requester
-        
+        self.url = url
+        self.info = pafy.new(url)
 
+        self.title = self.info.title
+        self.uploader = self.info.author
+        self.requested_by = requester
+        self.path = path
+
+        self.best = self.info.getbest()
+        self.filename = self.best.download(filepath=f"{path}.webm")
+
+
+
+'''
     def getInfo(self, url):
         with ytdl.YoutubeDL(options) as ydl:
             rawInfo = ydl.extract_info(url, download=False)
@@ -41,7 +44,7 @@ class Video:
 
 
 
-'''
+
 
 
 class Video:

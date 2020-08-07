@@ -27,5 +27,5 @@ configPath = "<Path to config.json>"
 ### Dependencies:
 
 discordpy
-youtube_dl
+pafy
 ffmpeg
