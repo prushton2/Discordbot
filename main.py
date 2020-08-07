@@ -1,4 +1,7 @@
 import discord
+import asyncio
+import youtube_dl as ytdl
+
 from discord.ext import commands
 import os
 import colorama
@@ -7,11 +10,14 @@ jsm = __import__("JsonManager")
 pyc = __import__("pyconfig")
 Banime = __import__("banime")
 Items = __import__("Items")
+Video = __import__("Video")
 
 
 config = jsm.JsonManager(pyc.configPath)
 userdata = jsm.UserData(pyc.userDataPath)
 banime = Banime.Banime(Banime.bannedAnime)
+audioPlayers = {}
+
 
 bot = commands.Bot(command_prefix= config.load()["prefix"])
 
@@ -169,6 +175,40 @@ class Inventory(commands.Cog):
             userdata.setInv(newInv, ctx.author.id)
 
 
+class Voice(commands.Cog):
+    def __init__(self, bot):
+        self.bot = bot
+        self.last_member = None
+
+    @commands.command(description="Joins the VC you are in", brief = "Join a VC")
+    @commands.Cog.listener()
+    async def join(self, ctx):
+        try:
+            await ctx.author.voice.channel.connect()
+        except:
+            await ctx.send("You arent in a voice channel")
+
+    @commands.command(description="Leaves the VC it is in", brief = "Leave a VC")
+    async def leave(self, ctx):
+        for i in bot.voice_clients:
+            if(i.guild.id == ctx.guild.id):
+                await i.disconnect()
+
+    @commands.command(description="Play a youtube video", brief = "play a song")
+    async def play(self, ctx, url):
+        video = Video.Video(url, ctx.author)
+        try:
+            voiceClient = await ctx.author.voice.channel.connect()
+        except:
+            await ctx.send("You arent in a voice channel")
+            return
+            
+        # await ctx.send(video.get_embed())
+        await ctx.send(f"Playing {video.title} by {video.uploader}")
+
+        voiceClient.play(discord.FFmpegPCMAudio(f"{video.title}.webm"), after=lambda e: print('done', e))
+        
+
 
 '''
 commands to add:
@@ -180,6 +220,7 @@ bot.add_cog(onMessage(bot))
 bot.add_cog(Default(bot))
 bot.add_cog(Economy(bot))
 bot.add_cog(Inventory(bot))
+bot.add_cog(Voice(bot))
 
 bot.run(config.load()["token"])
 
