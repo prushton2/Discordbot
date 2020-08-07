@@ -200,11 +200,20 @@ class Voice(commands.Cog):
             pass
     @commands.command(description="Play a youtube video", brief = "play a song")
     async def play(self, ctx, url):
-        
+
+
         try:
-            os.remove(f"{pyc.songsPath}{pyc.seperator}{ctx.guild.id}.webm")
+            for i in bot.voice_clients:
+                if(i.guild.id == ctx.guild.id):
+                    await i.disconnect()
+            try:
+                os.remove(f"{pyc.songsPath}{pyc.seperator}{ctx.guild.id}.webm")
+            except:
+                pass
         except:
             pass
+
+
 
         video = Video.Video(url, ctx.author, ctx.guild.id)
         try:
@@ -216,7 +225,8 @@ class Voice(commands.Cog):
 
         await ctx.send(f"Playing {video.title} by {video.uploader}")
 
-        voiceClient.play(discord.FFmpegPCMAudio(f"{pyc.songsPath}{pyc.seperator}{video.path}.webm"), after=lambda e: video.cleanup())
+        voiceClient.play(discord.FFmpegPCMAudio(f"{pyc.songsPath}{pyc.seperator}{video.path}.webm"), after=lambda e: bot.loop.create_task(leave(ctx)))
+
 
 bot.add_cog(onMessage(bot))
 bot.add_cog(Default(bot))
