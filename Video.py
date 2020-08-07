@@ -1,5 +1,8 @@
 import pafy
 import discord
+import os
+
+pyc = __import__("pyconfig")
 
 class Video:
     def __init__(self, url, requester, path):
@@ -13,4 +16,7 @@ class Video:
         self.path = path
 
         self.best = self.info.getbest()
-        self.filename = self.best.download(filepath=f"{path}.webm")
+        self.filename = self.best.download(filepath=f"{pyc.songsPath}\\{self.path}.webm")
+
+    def cleanup(self):
+        os.remove(f"{pyc.songsPath}\\{self.path}.webm")

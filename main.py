@@ -5,6 +5,7 @@ import pafy
 from discord.ext import commands
 import os
 import colorama
+import time
 
 jsm = __import__("JsonManager")
 pyc = __import__("pyconfig")
@@ -193,9 +194,18 @@ class Voice(commands.Cog):
         for i in bot.voice_clients:
             if(i.guild.id == ctx.guild.id):
                 await i.disconnect()
-
+        try:
+            os.remove(f"{pyc.songsPath}\\{ctx.guild.id}.webm")
+        except:
+            pass
     @commands.command(description="Play a youtube video", brief = "play a song")
     async def play(self, ctx, url):
+        
+        try:
+            os.remove(f"{pyc.songsPath}\\{ctx.guild.id}.webm")
+        except:
+            pass
+
         video = Video.Video(url, ctx.author, ctx.guild.id)
         try:
             voiceClient = await ctx.author.voice.channel.connect()
@@ -203,12 +213,10 @@ class Voice(commands.Cog):
             await ctx.send("You arent in a voice channel")
             return
             
+
         await ctx.send(f"Playing {video.title} by {video.uploader}")
-        # print(video.test)
 
-        voiceClient.play(discord.FFmpegPCMAudio(f"{video.path}.webm"), after=lambda e: print('done', e))
-        os.remove(f"{video.path}.webm")
-
+        voiceClient.play(discord.FFmpegPCMAudio(f"{pyc.songsPath}\\{video.path}.webm"), after=lambda e: video.cleanup())
 
 bot.add_cog(onMessage(bot))
 bot.add_cog(Default(bot))

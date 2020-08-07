@@ -22,6 +22,7 @@ pyconfig.py:
 ```python
 userDataPath = "<Path to userdata.json>"
 configPath = "<Path to config.json>"
+songsPath = "<Path to a folder to hold songs>"
 ```
 
 ### Dependencies:
