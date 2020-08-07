@@ -23,6 +23,7 @@ pyconfig.py:
 userDataPath = "<Path to userdata.json>"
 configPath = "<Path to config.json>"
 songsPath = "<Path to a folder to hold songs>"
+seperator = "<\\ if running on windows, / everywhere else>"
 ```
 
 ### Dependencies:

@@ -16,7 +16,7 @@ class Video:
         self.path = path
 
         self.best = self.info.getbest()
-        self.filename = self.best.download(filepath=f"{pyc.songsPath}\\{self.path}.webm")
+        self.filename = self.best.download(filepath=f"{pyc.songsPath}{pyc.seperator}{self.path}.webm")
 
     def cleanup(self):
-        os.remove(f"{pyc.songsPath}\\{self.path}.webm")
+        os.remove(f"{pyc.songsPath}{pyc.seperator}{self.path}.webm")
