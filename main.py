@@ -195,36 +195,28 @@ class Voice(commands.Cog):
             if(i.guild.id == ctx.guild.id):
                 await i.disconnect()
         try:
-            os.remove(f"{pyc.songsPath}{pyc.seperator}{ctx.guild.id}.webm")
+            os.remove(f"{pyc.songsPath}{pyc.seperator}{ctx.guild.id}.mp3")
         except:
             pass
     @commands.command(description="Play a youtube video", brief = "play a song")
     async def play(self, ctx, url):
 
-
-        try:
-            for i in bot.voice_clients:
-                if(i.guild.id == ctx.guild.id):
-                    await i.disconnect()
-            try:
-                os.remove(f"{pyc.songsPath}{pyc.seperator}{ctx.guild.id}.webm")
-            except:
-                pass
-        except:
-            pass
-
-
         video = Video.Video(url, ctx.author, ctx.guild.id)
         try:
             voiceClient = await ctx.author.voice.channel.connect()
+            # print("set voiceClient variable")
+        except discord.errors.ClientException:
+            for i in bot.voice_clients:
+                if(i.guild.id == ctx.guild.id):
+                    voiceClient = i
+            # print("read voiceClient off of connected channel")
         except:
             await ctx.send("You arent in a voice channel")
             return
-            
 
         await ctx.send(f"Playing {video.title} by {video.uploader}")
 
-        voiceClient.play(discord.FFmpegPCMAudio(f"{pyc.songsPath}{pyc.seperator}{video.path}.webm"), after=lambda e: bot.loop.create_task(leave(ctx)))
+        voiceClient.play(discord.FFmpegPCMAudio(f"{pyc.songsPath}{pyc.seperator}{video.path}.mp3"), after=lambda e: video.cleanup())
 
 
 bot.add_cog(onMessage(bot))
