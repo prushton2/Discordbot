@@ -207,7 +207,7 @@ class Voice(commands.Cog):
         # print(video.test)
 
         voiceClient.play(discord.FFmpegPCMAudio(f"{video.path}.webm"), after=lambda e: print('done', e))
-        
+        os.remove(f"{video.path}.webm")
 
 '''
 commands to add:
