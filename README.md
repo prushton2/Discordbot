@@ -23,3 +23,9 @@ pyconfig.py:
 userDataPath = "<Path to userdata.json>"
 configPath = "<Path to config.json>"
 ```
+
+### Dependencies:
+
+discordpy
+youtube_dl
+ffmpeg
