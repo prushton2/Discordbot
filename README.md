@@ -28,6 +28,10 @@ seperator = "<\\ if running on windows, / everywhere else>"
 
 ### Dependencies:
 
-discordpy
-pafy
-ffmpeg
+#### Pip:
+discordpy<br>
+pafy<br>
+youtube_dl<br>
+
+#### Applications:
+ffmpeg<br>
