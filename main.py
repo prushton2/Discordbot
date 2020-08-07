@@ -209,12 +209,7 @@ class Voice(commands.Cog):
         voiceClient.play(discord.FFmpegPCMAudio(f"{video.path}.webm"), after=lambda e: print('done', e))
         os.remove(f"{video.path}.webm")
 
-'''
-commands to add:
 
-inv use
-
-'''
 bot.add_cog(onMessage(bot))
 bot.add_cog(Default(bot))
 bot.add_cog(Economy(bot))
