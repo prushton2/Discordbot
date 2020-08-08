@@ -13,6 +13,7 @@ class Video:
         self.uploader = self.info.author
         self.requested_by = requested_by
         self.path = path
+        self.length = self.info.length
         self.thumbnail = self.info.thumb
 
     def download(self):
@@ -24,6 +25,7 @@ class Video:
 
     def getEmbed(self, status="Now Playing"):
         embedVar = discord.Embed(title=f"{status} - {self.title}", url=f"{self.url}", color=0x00ff00)
+        embedVar.add_field(name=f"By {self.uploader}", value=f"{int(self.length/60)}m {self.length % 60}s", inline=False)
         embedVar.set_thumbnail(url=self.thumbnail)
         embedVar.set_footer(text=f"Requested by {self.requested_by}",icon_url=self.requested_by.avatar_url)
         return embedVar
