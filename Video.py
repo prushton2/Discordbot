@@ -14,7 +14,8 @@ class Video:
         self.uploader = self.info.author
         self.requested_by = requester
         self.path = path
-
+        
+    def download(self):
         self.best = self.info.getbest()
         self.filename = self.best.download(filepath=f"{pyc.songsPath}{pyc.seperator}{self.path}.mp3")
 

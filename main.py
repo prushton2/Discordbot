@@ -214,7 +214,9 @@ class Voice(commands.Cog):
             await ctx.send("You arent in a voice channel")
             return
 
-        await ctx.send(f"Playing {video.title} by {video.uploader}")
+        message = await ctx.send(f"Loading - {video.title} by {video.uploader}")
+        video.download()
+        await message.edit(content=f"Playing - {video.title} by {video.uploader}")
 
         voiceClient.play(discord.FFmpegPCMAudio(f"{pyc.songsPath}{pyc.seperator}{video.path}.mp3"), after=lambda e: video.cleanup())
 
