@@ -74,6 +74,13 @@ class Default(commands.Cog):
     async def banime(self, ctx):
         await ctx.send(f"Todays banned anime is {banime.bannedanime.name}")
 
+    @commands.command()
+    async def debug(self, ctx):
+        video = Video.Video("https://www.youtube.com/watch?v=cPJUBQd-PNM&feature=youtu.be", ctx.author, ctx.guild.id)
+
+        
+        await ctx.send(embed=embedVar)
+
 
 class Economy(commands.Cog):
     def __init__(self, bot):
@@ -214,9 +221,9 @@ class Voice(commands.Cog):
             await ctx.send("You arent in a voice channel")
             return
 
-        message = await ctx.send(f"Loading - {video.title} by {video.uploader}")
+        message = await ctx.send(embed=video.getEmbed("Now Loading"))
         video.download()
-        await message.edit(content=f"Playing - {video.title} by {video.uploader}")
+        await message.edit(embed=video.getEmbed())
 
         voiceClient.play(discord.FFmpegPCMAudio(f"{pyc.songsPath}{pyc.seperator}{video.path}.mp3"), after=lambda e: video.cleanup())
 
