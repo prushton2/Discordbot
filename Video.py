@@ -3,7 +3,6 @@ import discord
 import os
 
 pyc = __import__("pyconfig")
-
 class Video:
     def __init__(self, url, requested_by, path):
 

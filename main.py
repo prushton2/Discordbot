@@ -227,7 +227,6 @@ class Voice(commands.Cog):
 
         voiceClient.play(discord.FFmpegPCMAudio(f"{pyc.songsPath}{pyc.seperator}{video.path}.mp3"), after=lambda e: video.cleanup())
 
-
 bot.add_cog(onMessage(bot))
 bot.add_cog(Default(bot))
 bot.add_cog(Economy(bot))
