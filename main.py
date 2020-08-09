@@ -78,6 +78,9 @@ class Default(commands.Cog):
     async def debug(self, ctx):
         print(playlists)
 
+    @commands.command(brief = "Pay respects", description = "Pay respects to someone")
+    async def f(self, ctx, receiver = ""):
+        await ctx.send(f"{ctx.author.name} has paid their respects to {receiver}" if receiver != "" else f"{ctx.author.name} has paid their respects")
         
 
 
