@@ -17,7 +17,7 @@ Video = __import__("Video")
 config = jsm.JsonManager(pyc.configPath)
 userdata = jsm.UserData(pyc.userDataPath)
 banime = Banime.Banime(Banime.bannedAnime)
-audioPlayers = {}
+playlists = {}
 
 
 bot = commands.Bot(command_prefix= config.load()["prefix"])
@@ -76,10 +76,9 @@ class Default(commands.Cog):
 
     @commands.command()
     async def debug(self, ctx):
-        video = Video.Video("https://www.youtube.com/watch?v=cPJUBQd-PNM&feature=youtu.be", ctx.author, ctx.guild.id)
+        print(playlists)
 
         
-        await ctx.send(embed=embedVar)
 
 
 class Economy(commands.Cog):
@@ -196,36 +195,68 @@ class Voice(commands.Cog):
         except:
             await ctx.send("You arent in a voice channel")
 
-    @commands.command(description="Leaves the VC it is in", brief = "Leave a VC")
+    @commands.command(description="Leaves the VC it is in", brief = "Leave a VC", aliases = ["byebye"])
     async def leave(self, ctx):
         for i in bot.voice_clients:
             if(i.guild.id == ctx.guild.id):
                 await i.disconnect()
         try:
-            os.remove(f"{pyc.songsPath}{pyc.seperator}{ctx.guild.id}.mp3")
+            for i in playlists[ctx.guild.id]:
+                os.remove(f"{pyc.songsPath}{pyc.seperator}{i[0]}")
         except:
-            pass
-    @commands.command(description="Play a youtube video", brief = "play a song")
-    async def play(self, ctx, url):
+            pass  
 
-        video = Video.Video(url, ctx.author, ctx.guild.id)
+    def _cleanup(self, ctx):
+        try:
+            for i in playlists[ctx.guild.id]:
+                os.remove(f"{pyc.songsPath}{pyc.seperator}{i[0]}")
+            playlists[ctx.guild.id] = []
+        except:
+            pass  
+
+    @commands.command(description="Play a youtube video", brief = "play a song")
+    async def play(self, ctx, url="null"):
+
         try:
             voiceClient = await ctx.author.voice.channel.connect()
-            # print("set voiceClient variable")
+            self._cleanup(ctx) # If the bot has to join a voice channel, wipe the playlist
+
         except discord.errors.ClientException:
+
             for i in bot.voice_clients:
                 if(i.guild.id == ctx.guild.id):
                     voiceClient = i
-            # print("read voiceClient off of connected channel")
         except:
             await ctx.send("You arent in a voice channel")
             return
 
-        message = await ctx.send(embed=video.getEmbed("Now Loading"))
-        video.download()
-        await message.edit(embed=video.getEmbed())
+        if(url != "null"):
 
-        voiceClient.play(discord.FFmpegPCMAudio(f"{pyc.songsPath}{pyc.seperator}{video.path}.mp3"), after=lambda e: video.cleanup())
+            video = Video.Video(url, ctx.author)
+
+            message = await ctx.send(embed=video.getEmbed("Now Loading"))
+            video.download(ctx.guild.id)
+            await message.edit(embed=video.getEmbed())
+
+            try:
+                playlists[ctx.guild.id].append([f"{video.path}.mp3", url])
+            except:
+                playlists[ctx.guild.id] = [[f"{video.path}.mp3", url]]
+
+
+        if(not voiceClient.is_playing()):
+            while(len(playlists[ctx.guild.id]) != 0):
+
+                firstSong = playlists[ctx.guild.id][0][0]
+                playingSong = Video.Video(playlists[ctx.guild.id][0][1], "null")
+
+                voiceClient.play(discord.FFmpegPCMAudio(f"{pyc.songsPath}{pyc.seperator}{firstSong}")) #, after=lambda e: self._cleanup(ctx, firstSong))
+                await asyncio.sleep(playingSong.length)
+                os.remove(f"{pyc.songsPath}{pyc.seperator}{firstSong}")
+                playlists[ctx.guild.id].pop(0)
+            
+
+
 
 bot.add_cog(onMessage(bot))
 bot.add_cog(Default(bot))
