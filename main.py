@@ -22,6 +22,7 @@ playlists = {}
 
 bot = commands.Bot(command_prefix= config.load()["prefix"])
 
+
 @bot.event
 async def on_ready():
     await bot.change_presence(activity=discord.Game(name=config.load()["prefix"]+"help"))
@@ -31,7 +32,8 @@ class onMessage(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self._last_member = None
-    
+
+
     @commands.Cog.listener() #run on every message to update money
     async def on_message(self, ctx):
         authorColor = colorama.Fore.CYAN
@@ -211,7 +213,20 @@ class Voice(commands.Cog):
                 os.remove(f"{pyc.songsPath}{pyc.seperator}{i[0]}")
             playlists[ctx.guild.id] = []
         except:
-            pass  
+            pass
+
+    def _removeSong(self, guildID, uuid):
+        for i in range(len(playlists[guildID])):
+            if(playlists[guildID][i][0] == f"{uuid}"):
+                playlists[guildID].pop(i)
+                os.remove(f"{pyc.songsPath}{pyc.seperator}{uuid}")
+                print(f"removed {uuid}.mp3")
+                return
+            else:
+                print(f"{uuid} doesnt match {playlists[guildID][i][0]}")
+
+    
+
 
     @commands.command(description="Play a youtube video", brief = "play a song")
     async def play(self, ctx, url="null"):
@@ -250,12 +265,10 @@ class Voice(commands.Cog):
                 firstSong = playlists[ctx.guild.id][0][0]
                 playingVideo = Video.Video(playlists[ctx.guild.id][0][1], "null")
 
-                # await message.edit(embed=playingVideo.getEmbed())
-
                 voiceClient.play(discord.FFmpegPCMAudio(f"{pyc.songsPath}{pyc.seperator}{firstSong}")) #, after=lambda e: self._cleanup(ctx, firstSong))
                 await asyncio.sleep(playingVideo.length)
-                os.remove(f"{pyc.songsPath}{pyc.seperator}{firstSong}")
-                playlists[ctx.guild.id].pop(0)
+
+                self._removeSong(ctx.guild.id, firstSong)
             
 
 
