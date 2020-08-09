@@ -200,11 +200,7 @@ class Voice(commands.Cog):
         for i in bot.voice_clients:
             if(i.guild.id == ctx.guild.id):
                 await i.disconnect()
-        try:
-            for i in playlists[ctx.guild.id]:
-                os.remove(f"{pyc.songsPath}{pyc.seperator}{i[0]}")
-        except:
-            pass  
+        self._cleanup(ctx)
 
     def _cleanup(self, ctx):
         try:
@@ -236,22 +232,25 @@ class Voice(commands.Cog):
 
             message = await ctx.send(embed=video.getEmbed("Now Loading"))
             video.download(ctx.guild.id)
-            await message.edit(embed=video.getEmbed())
+
 
             try:
                 playlists[ctx.guild.id].append([f"{video.path}.mp3", url])
             except:
                 playlists[ctx.guild.id] = [[f"{video.path}.mp3", url]]
 
+            await message.edit(embed=video.getEmbed("Now Playing" if len(playlists[ctx.guild.id]) == 1 else "Added to queue"))
 
         if(not voiceClient.is_playing()):
             while(len(playlists[ctx.guild.id]) != 0):
 
                 firstSong = playlists[ctx.guild.id][0][0]
-                playingSong = Video.Video(playlists[ctx.guild.id][0][1], "null")
+                playingVideo = Video.Video(playlists[ctx.guild.id][0][1], "null")
+
+                # await message.edit(embed=playingVideo.getEmbed())
 
                 voiceClient.play(discord.FFmpegPCMAudio(f"{pyc.songsPath}{pyc.seperator}{firstSong}")) #, after=lambda e: self._cleanup(ctx, firstSong))
-                await asyncio.sleep(playingSong.length)
+                await asyncio.sleep(playingVideo.length)
                 os.remove(f"{pyc.songsPath}{pyc.seperator}{firstSong}")
                 playlists[ctx.guild.id].pop(0)
             
