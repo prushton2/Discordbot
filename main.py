@@ -272,7 +272,6 @@ class Voice(commands.Cog):
             
 
 
-
 bot.add_cog(onMessage(bot))
 bot.add_cog(Default(bot))
 bot.add_cog(Economy(bot))
