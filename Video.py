@@ -1,29 +1,32 @@
-import pafy
+import youtube_dl as ytdl
 import discord
-import os
-import uuid
 
-pyc = __import__("pyconfig")
+options = {
+    "default_search": "ytsearch",
+    "format": "bestaudio/best",
+    "quiet": True,
+    "extract_flat": "in_playlist"
+}
+
+
 class Video:
-    def __init__(self, url, requested_by):
+    def __init__(self, url, requester):
+        with ytdl.YoutubeDL(options) as ydl:
+            
+            video = ydl.extract_info(url, download=False)
+            videoFormat = video["formats"][0]
 
-        self.url = url
-        self.info = pafy.new(url)
-
-        self.title = self.info.title
-        self.uploader = self.info.author
-        self.requested_by = requested_by
-        self.path = uuid.uuid4()
-        self.length = self.info.length
-        self.thumbnail = self.info.thumb
-
-    def download(self, serverID):
-        self.best = self.info.getbest()
-        self.filename = self.best.download(filepath=f"{pyc.songsPath}{pyc.seperator}{self.path}.mp3")
+            self.url = url 
+            self.stream_url = videoFormat['url']
+            self.title = video['title']
+            self.uploader = video['uploader']
+            self.thumbnail = video['thumbnail']
+            self.length = video['duration']
+            self.requester = requester
 
     def getEmbed(self, status="Now Playing"):
         embedVar = discord.Embed(title=f"{status} - {self.title}", url=f"{self.url}", color=0x00ff00)
         embedVar.add_field(name=f"By {self.uploader}", value=f"{int(self.length/60)}m {self.length%60}s", inline=False)
         embedVar.set_thumbnail(url=self.thumbnail)
-        embedVar.set_footer(text=f"Requested by {self.requested_by}",icon_url=self.requested_by.avatar_url)
+        embedVar.set_footer(text=f"Requested by {self.requester}",icon_url=self.requester.avatar_url)
         return embedVar

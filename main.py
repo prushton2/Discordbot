@@ -200,7 +200,7 @@ class Voice(commands.Cog):
         except:
             await ctx.send("You arent in a voice channel")
 
-    @commands.command(description="Leaves the VC it is in", brief = "Leave a VC", aliases = ["byebye"])
+    @commands.command(description="Leaves the VC it is in", brief = "Leave a VC", aliases = ["byebye", "stop"])
     async def leave(self, ctx):
         for i in bot.voice_clients:
             if(i.guild.id == ctx.guild.id):
@@ -246,29 +246,19 @@ class Voice(commands.Cog):
 
         if(url != "null"):
 
+            def after(err):
+                try:
+                    print(err)
+                except:
+                    pass
+
             video = Video.Video(url, ctx.author)
 
-            message = await ctx.send(embed=video.getEmbed("Now Loading"))
-            video.download(ctx.guild.id)
+            message = await ctx.send(embed=video.getEmbed())
 
+            source = await discord.FFmpegOpusAudio.from_probe(video.stream_url)
+            voiceClient.play(source, after=after)
 
-            try:
-                playlists[ctx.guild.id].append([f"{video.path}.mp3", url])
-            except:
-                playlists[ctx.guild.id] = [[f"{video.path}.mp3", url]]
-
-            await message.edit(embed=video.getEmbed("Now Playing" if len(playlists[ctx.guild.id]) == 1 else "Added to queue"))
-
-        if(not voiceClient.is_playing()):
-            while(len(playlists[ctx.guild.id]) != 0):
-
-                firstSong = playlists[ctx.guild.id][0][0]
-                playingVideo = Video.Video(playlists[ctx.guild.id][0][1], "null")
-
-                voiceClient.play(discord.FFmpegPCMAudio(f"{pyc.songsPath}{pyc.seperator}{firstSong}")) #, after=lambda e: self._cleanup(ctx, firstSong))
-                await asyncio.sleep(playingVideo.length)
-
-                self._removeSong(ctx.guild.id, firstSong)
             
 
 
