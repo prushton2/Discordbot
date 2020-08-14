@@ -2,7 +2,21 @@ import youtube_dl as ytdl
 import discord
 tools = __import__("tools")
 
-options = {
+options = {    
+    'format': 'bestaudio/best',
+    'outtmpl': 'downloads/%(extractor)s-%(id)s-%(title)s.%(ext)s',
+    'restrictfilenames': True,
+    'noplaylist': True,
+    'nocheckcertificate': True,
+    'ignoreerrors': False,
+    'logtostderr': False,
+    'quiet': True,
+    'no_warnings': True,
+    'default_search': 'auto',
+    'source_address': '0.0.0.0'  # ipv6 addresses cause issues sometimes
+}
+
+_options = {
     "default_search": "ytsearch",
     "format": "bestaudio/best",
     "quiet": True,
@@ -37,3 +51,5 @@ class Video:
         embedVar.set_thumbnail(url=self.thumbnail)
         embedVar.set_footer(text=f"Requested by {self.requester}",icon_url=self.requester.avatar_url)
         return embedVar
+
+
