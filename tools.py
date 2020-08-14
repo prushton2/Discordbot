@@ -1,4 +1,10 @@
 class TimeConverter:
     @staticmethod
-    def convertTime(seconds):
-        return seconds%60, int(seconds/60), int((seconds/60)/60)
+    def convertTime(timeInSeconds):
+        seconds = timeInSeconds%60
+
+        hours = int(timeInSeconds/60/60)
+
+        minutes = int(timeInSeconds/60) - int(int(timeInSeconds/60/60)*60)
+
+        return seconds, minutes, hours
