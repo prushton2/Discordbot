@@ -12,7 +12,7 @@ pyc = __import__("pyconfig")
 Banime = __import__("banime")
 Items = __import__("Items")
 Video = __import__("Video")
-
+tools = __import__("tools")
 
 config = jsm.JsonManager(pyc.configPath)
 userdata = jsm.UserData(pyc.userDataPath)
