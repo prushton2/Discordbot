@@ -210,6 +210,15 @@ class Voice(commands.Cog):
                 await i.disconnect()
         allPlaylists.cleanup(ctx.guild.id)
 
+    @commands.command(description = "Skips the currently playing song", brief = "skips a song")
+    async def skip(self, ctx):
+        try:
+            for i in bot.voice_clients:
+                if(i.guild.id == ctx.guild.id):
+                    i.stop()
+        except:
+            await ctx.send("You arent in a voice channel")
+            return
 
     @commands.command(description="Play a youtube video", brief = "play a song")
     async def play(self, ctx, url="null"):
