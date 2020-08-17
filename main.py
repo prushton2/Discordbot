@@ -239,18 +239,18 @@ class Voice(commands.Cog):
 
         await message.edit(embed=video.getEmbed("Now Playing" if len(allPlaylists.getPlaylist(ctx.guild.id).videos) == 1 else "Added to queue"))
 
+        def after(error):
+            allPlaylists.removeVideo(ctx.guild.id)
+            try:
+                playingVideo = allPlaylists.getPlaylist(ctx.guild.id).videos[0]
+                voiceClient.play(discord.FFmpegPCMAudio(f"{pyc.songsPath}{pyc.seperator}{playingVideo.path}.mp3"), after=after)
+            except:
+                pass
 
         if(not voiceClient.is_playing()):
-            while(len(allPlaylists.getPlaylist(ctx.guild.id).videos) != 0):
-
-                playingVideo = allPlaylists.getPlaylist(ctx.guild.id).videos[0]
-
-                voiceClient.play(discord.FFmpegPCMAudio(f"{pyc.songsPath}{pyc.seperator}{playingVideo.path}.mp3")) #, after=lambda e: self._cleanup(ctx, firstSong))
-                
-                await asyncio.sleep(playingVideo.length)
-
-                allPlaylists.removeVideo(ctx.guild.id)
-            
+            playingVideo = allPlaylists.getPlaylist(ctx.guild.id).videos[0]
+            voiceClient.play(discord.FFmpegPCMAudio(f"{pyc.songsPath}{pyc.seperator}{playingVideo.path}.mp3"), after=after)
+    
 
 
 
