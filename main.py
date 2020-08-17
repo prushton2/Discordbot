@@ -17,7 +17,7 @@ Video = __import__("Video")
 config = jsm.JsonManager(pyc.configPath)
 userdata = jsm.UserData(pyc.userDataPath)
 banime = Banime.Banime(Banime.bannedAnime)
-playlists = {}
+allPlaylists = Video.AllPlaylists()
 
 
 bot = commands.Bot(command_prefix= config.load()["prefix"])
@@ -78,7 +78,10 @@ class Default(commands.Cog):
 
     @commands.command()
     async def debug(self, ctx):
-        print(playlists)
+        for i in allPlaylists.playlists:
+            print(f"{i.guildID} ")
+            for j in i.videos:
+                print(f"{j.title}, {j.path}")
 
     @commands.command(brief = "Pay respects", description = "Pay respects to someone")
     async def f(self, ctx, receiver = ""):
@@ -200,40 +203,23 @@ class Voice(commands.Cog):
         except:
             await ctx.send("You arent in a voice channel")
 
-    @commands.command(description="Leaves the VC it is in", brief = "Leave a VC", aliases = ["byebye"])
+    @commands.command(description="Leaves the VC it is in", brief = "Leave a VC", aliases = ["byebye", "stop"])
     async def leave(self, ctx):
         for i in bot.voice_clients:
             if(i.guild.id == ctx.guild.id):
                 await i.disconnect()
-        self._cleanup(ctx)
-
-    def _cleanup(self, ctx):
-        try:
-            for i in playlists[ctx.guild.id]:
-                os.remove(f"{pyc.songsPath}{pyc.seperator}{i[0]}")
-            playlists[ctx.guild.id] = []
-        except:
-            pass
-
-    def _removeSong(self, guildID, uuid):
-        for i in range(len(playlists[guildID])):
-            if(playlists[guildID][i][0] == f"{uuid}"):
-                playlists[guildID].pop(i)
-                os.remove(f"{pyc.songsPath}{pyc.seperator}{uuid}")
-                print(f"removed {uuid}.mp3")
-                return
-            else:
-                print(f"{uuid} doesnt match {playlists[guildID][i][0]}")
-
-    
+        allPlaylists.cleanup(ctx.guild.id)
 
 
     @commands.command(description="Play a youtube video", brief = "play a song")
     async def play(self, ctx, url="null"):
 
+        if(url == "null"):
+            await ctx.send("You need to provide a youtube URL")
+
         try:
             voiceClient = await ctx.author.voice.channel.connect()
-            self._cleanup(ctx) # If the bot has to join a voice channel, wipe the playlist
+            allPlaylists.cleanup(ctx.guild.id)
 
         except discord.errors.ClientException:
 
@@ -244,31 +230,26 @@ class Voice(commands.Cog):
             await ctx.send("You arent in a voice channel")
             return
 
-        if(url != "null"):
+        video = Video.Video(url, ctx.author)
 
-            video = Video.Video(url, ctx.author)
+        message = await ctx.send(embed=video.getEmbed("Now Loading"))
+        video.download(ctx.guild.id)
 
-            message = await ctx.send(embed=video.getEmbed("Now Loading"))
-            video.download(ctx.guild.id)
+        allPlaylists.addVideo(ctx.guild.id, video)
 
+        await message.edit(embed=video.getEmbed("Now Playing" if len(allPlaylists.getPlaylist(ctx.guild.id).videos) == 1 else "Added to queue"))
 
-            try:
-                playlists[ctx.guild.id].append([f"{video.path}.mp3", url])
-            except:
-                playlists[ctx.guild.id] = [[f"{video.path}.mp3", url]]
-
-            await message.edit(embed=video.getEmbed("Now Playing" if len(playlists[ctx.guild.id]) == 1 else "Added to queue"))
 
         if(not voiceClient.is_playing()):
-            while(len(playlists[ctx.guild.id]) != 0):
+            while(len(allPlaylists.getPlaylist(ctx.guild.id).videos) != 0):
 
-                firstSong = playlists[ctx.guild.id][0][0]
-                playingVideo = Video.Video(playlists[ctx.guild.id][0][1], "null")
+                playingVideo = allPlaylists.getPlaylist(ctx.guild.id).videos[0]
 
-                voiceClient.play(discord.FFmpegPCMAudio(f"{pyc.songsPath}{pyc.seperator}{firstSong}")) #, after=lambda e: self._cleanup(ctx, firstSong))
+                voiceClient.play(discord.FFmpegPCMAudio(f"{pyc.songsPath}{pyc.seperator}{playingVideo.path}.mp3")) #, after=lambda e: self._cleanup(ctx, firstSong))
+                
                 await asyncio.sleep(playingVideo.length)
 
-                self._removeSong(ctx.guild.id, firstSong)
+                allPlaylists.removeVideo(ctx.guild.id)
             
 
 
