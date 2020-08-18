@@ -9,7 +9,6 @@ import time
 
 jsm = __import__("JsonManager")
 pyc = __import__("pyconfig")
-Banime = __import__("banime")
 Items = __import__("Items")
 Video = __import__("Video")
 

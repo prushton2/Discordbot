@@ -9,7 +9,6 @@ import time
 
 jsm = __import__("JsonManager")
 pyc = __import__("pyconfig")
-Banime = __import__("banime")
 Items = __import__("Items")
 Video = __import__("Video")
 
@@ -34,7 +33,7 @@ class Voice(commands.Cog):
 
     @commands.command(description="Leaves the VC it is in", brief = "Leave a VC", aliases = ["byebye", "stop"])
     async def leave(self, ctx):
-        for i in bot.voice_clients:
+        for i in self.bot.voice_clients:
             if(i.guild.id == ctx.guild.id):
                 await i.disconnect()
         allPlaylists.cleanup(ctx.guild.id)
@@ -42,7 +41,7 @@ class Voice(commands.Cog):
     @commands.command(description = "Skips the currently playing song", brief = "skips a song")
     async def skip(self, ctx):
         try:
-            for i in bot.voice_clients:
+            for i in self.bot.voice_clients:
                 if(i.guild.id == ctx.guild.id):
                     i.stop()
         except:
@@ -61,7 +60,7 @@ class Voice(commands.Cog):
 
         except discord.errors.ClientException:
 
-            for i in bot.voice_clients:
+            for i in self.bot.voice_clients:
                 if(i.guild.id == ctx.guild.id):
                     voiceClient = i
         except:

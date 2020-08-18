@@ -10,18 +10,15 @@ import time
 
 jsm = __import__("JsonManager")
 pyc = __import__("pyconfig")
-Banime = __import__("banime")
 Items = __import__("Items")
 Video = __import__("Video")
 
-
 config = jsm.JsonManager(pyc.configPath)
 userdata = jsm.UserData(pyc.userDataPath)
-banime = Banime.Banime(Banime.bannedAnime)
-
 
 bot = commands.Bot(command_prefix= config.load()["prefix"])
 
+cogs = [Default.Default, Economy.Economy, Inventory.Inventory, Voice.Voice]
 
 @bot.event
 async def on_ready():
@@ -56,30 +53,9 @@ class onMessage(commands.Cog):
         if(not ctx.content.startswith(".") and not ctx.author == bot.user):
             jsm.updateMoney(ctx.author.id, userdata)
         
-        if(ctx.author != bot.user):
-            warning, relatedAnime = banime.check(ctx.content)
-            if(warning != ""):
-                await ctx.channel.send(f"Warning: You saying {warning} is related to the banned anime {relatedAnime}. You have received a warning.")
         # await bot.process_commands(ctx)
 
-
-
-
-
-    
-
-
-
-bot.add_cog(onMessage(bot))
-bot.add_cog(Default(bot))
-bot.add_cog(Economy(bot))
-bot.add_cog(Inventory(bot))
-bot.add_cog(Voice(bot))
+for i in cogs:
+    bot.add_cog(i(bot))
 
 bot.run(config.load()["token"])
-
-"""
-    async def on_member_join(self, member):
-        channel = member.guild.system_channel
-        if channel is not None:
-            await channel.send('Welcome {0.mention}.'.format(member))"""
