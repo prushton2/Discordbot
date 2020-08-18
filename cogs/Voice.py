@@ -15,13 +15,14 @@ Video = __import__("Video")
 
 config = jsm.JsonManager(pyc.configPath)
 userdata = jsm.UserData(pyc.userDataPath)
-allPlaylists = Video.AllPlaylists()
+
 
 
 class Voice(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.last_member = None
+        self.allPlaylists = Video.AllPlaylists()
 
     @commands.command(description="Joins the VC you are in", brief = "Join a VC")
     @commands.Cog.listener()
@@ -36,7 +37,7 @@ class Voice(commands.Cog):
         for i in self.bot.voice_clients:
             if(i.guild.id == ctx.guild.id):
                 await i.disconnect()
-        allPlaylists.cleanup(ctx.guild.id)
+        self.allPlaylists.cleanup(ctx.guild.id)
 
     @commands.command(description = "Skips the currently playing song", brief = "skips a song")
     async def skip(self, ctx):
@@ -56,7 +57,7 @@ class Voice(commands.Cog):
 
         try:
             voiceClient = await ctx.author.voice.channel.connect()
-            allPlaylists.cleanup(ctx.guild.id)
+            self.allPlaylists.cleanup(ctx.guild.id)
 
         except discord.errors.ClientException:
 
@@ -72,18 +73,18 @@ class Voice(commands.Cog):
         message = await ctx.send(embed=video.getEmbed("Now Loading"))
         video.download(ctx.guild.id)
 
-        allPlaylists.addVideo(ctx.guild.id, video)
+        self.allPlaylists.addVideo(ctx.guild.id, video)
 
-        await message.edit(embed=video.getEmbed("Now Playing" if len(allPlaylists.getPlaylist(ctx.guild.id).videos) == 1 else "Added to queue"))
+        await message.edit(embed=video.getEmbed("Now Playing" if len(self.allPlaylists.getPlaylist(ctx.guild.id).videos) == 1 else "Added to queue"))
 
         def after(error):
-            allPlaylists.removeVideo(ctx.guild.id)
+            self.allPlaylists.removeVideo(ctx.guild.id)
             try:
-                playingVideo = allPlaylists.getPlaylist(ctx.guild.id).videos[0]
+                playingVideo = self.allPlaylists.getPlaylist(ctx.guild.id).videos[0]
                 voiceClient.play(discord.FFmpegPCMAudio(f"{pyc.songsPath}{pyc.seperator}{playingVideo.path}.mp3"), after=after)
             except:
                 pass
 
         if(not voiceClient.is_playing()):
-            playingVideo = allPlaylists.getPlaylist(ctx.guild.id).videos[0]
+            playingVideo = self.allPlaylists.getPlaylist(ctx.guild.id).videos[0]
             voiceClient.play(discord.FFmpegPCMAudio(f"{pyc.songsPath}{pyc.seperator}{playingVideo.path}.mp3"), after=after)
