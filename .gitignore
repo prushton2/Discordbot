@@ -4,4 +4,5 @@ pyconfig.py
 __pycache__
 .idea
 .vscode
-songs
+songs/*
+!songs/.gitkeep 
