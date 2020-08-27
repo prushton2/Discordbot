@@ -54,6 +54,7 @@ class Voice(commands.Cog):
 
         if(url == "null"):
             await ctx.send("You need to provide a youtube URL")
+            return
 
         try:
             voiceClient = await ctx.author.voice.channel.connect()
