@@ -1,6 +1,7 @@
 import discord
 import asyncio
 import pafy
+import threading
 
 from discord.ext import commands
 import os
@@ -72,7 +73,16 @@ class Voice(commands.Cog):
         video = Video.Video(url, ctx.author)
 
         message = await ctx.send(embed=video.getEmbed("Now Loading"))
-        video.download(ctx.guild.id)
+        
+        t1 = threading.Thread(target=self.__download, args=(video, ctx.guild.id)) 
+        t1.start() 
+
+        exists = False
+
+        while(not os.path.isfile(f"songs{pyc.seperator}{video.path}.mp3")):
+            await asyncio.sleep(1)
+
+        t1.join()
 
         self.allPlaylists.addVideo(ctx.guild.id, video)
 
@@ -89,3 +99,6 @@ class Voice(commands.Cog):
         if(not voiceClient.is_playing()):
             playingVideo = self.allPlaylists.getPlaylist(ctx.guild.id).videos[0]
             voiceClient.play(discord.FFmpegPCMAudio(f"{pyc.songsPath}{pyc.seperator}{playingVideo.path}.mp3"), after=after)
+
+    def __download(self, video, id):
+        video.download(id)
