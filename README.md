@@ -30,8 +30,9 @@ seperator = "<\\ if running on windows, / everywhere else>"
 
 #### Pip:
 discordpy<br>
-pafy<br>
 youtube_dl<br>
+pafy<br>
+colorama<br>
 
 #### Applications:
 ffmpeg<br>
