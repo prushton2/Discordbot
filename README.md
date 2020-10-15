@@ -30,10 +30,12 @@ seperator = "<\\ if running on windows, / everywhere else>"
 
 #### Pip:
 asyncio<br>
-discordpy<br>
-youtube_dl<br>
-pafy<br>
 colorama<br>
+discordpy<br>
+pafy<br>
+PyNaCl<br>
+colorama<br>
+youtube_dl<br>
 
 #### Applications:
 ffmpeg<br>
