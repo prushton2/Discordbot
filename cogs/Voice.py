@@ -79,7 +79,7 @@ class Voice(commands.Cog):
 
         exists = False
 
-        while(not os.path.isfile(f"songs{pyc.seperator}{video.path}.mp3")):
+        while(not os.path.isfile(f"{pyc.songsPath}{pyc.seperator}{video.path}.mp3")):
             await asyncio.sleep(1)
 
         t1.join()
