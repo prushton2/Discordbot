@@ -34,7 +34,6 @@ colorama<br>
 discordpy<br>
 pafy<br>
 PyNaCl<br>
-colorama<br>
 youtube_dl<br>
 
 #### Applications:
